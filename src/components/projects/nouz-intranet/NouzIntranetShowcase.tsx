@@ -74,17 +74,17 @@ export default function NouzIntranetShowcase() {
       <style jsx global>{`
         @font-face {
           font-family: 'NouzIntranetHeavitas';
-          src: url('/showcase/nouz-intranet/fonts/Heavitas.ttf') format('truetype');
+          src: url('/showcase/nouz-intranet/Heavitas.ttf') format('truetype');
         }
 
         @font-face {
           font-family: 'NouzIntranetMyriad';
-          src: url('/showcase/nouz-intranet/fonts/MYRIADPRO-REGULAR.OTF') format('opentype');
+          src: url('/showcase/nouz-intranet/MYRIADPRO-REGULAR.OTF') format('opentype');
         }
 
         @font-face {
           font-family: 'NouzIntranetPoppins';
-          src: url('/showcase/nouz-intranet/fonts/Poppins-Light.ttf') format('truetype');
+          src: url('/showcase/nouz-intranet/Poppins-Light.ttf') format('truetype');
         }
 
         .nouz-intranet-heavitas {

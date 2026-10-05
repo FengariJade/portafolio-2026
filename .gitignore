@@ -1,5 +1,7 @@
 node_modules/
 .next/
+out/
+.pages-dist/
 dist/
 build/
 .env
