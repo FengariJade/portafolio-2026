@@ -1,0 +1,139 @@
+<div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+  (click)="close.emit()">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 sticky top-0 bg-white z-10">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">Registrar Conductor</h3>
+        <p class="text-sm text-gray-400 mt-0.5">Completa los datos del conductor</p>
+      </div>
+      <button (click)="close.emit()"
+        class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 text-xl">✕</button>
+    </div>
+
+    <div class="px-8 py-6">
+      <form [formGroup]="form" class="flex flex-col gap-8">
+
+        <!-- Datos Personales -->
+        <div>
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-4">Datos Personales</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Nombre</label>
+              <input formControlName="firstName" type="text" placeholder="Ej: Carlos"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'firstName')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Apellido</label>
+              <input formControlName="lastName" type="text" placeholder="Ej: López Ríos"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'lastName')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Tipo de documento</label>
+              <select formControlName="documentType"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all">
+                @for (type of documentTypes; track type.value) {
+                  <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Número de documento</label>
+              <input formControlName="documentNumber" type="text" placeholder="12345678" maxlength="8"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'documentNumber')) {
+                <span class="text-red-500 text-xs">Documento inválido (8 dígitos)</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Teléfono</label>
+              <input formControlName="phone" type="tel" placeholder="+51 999 999 999"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'phone')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Tipo de contrato</label>
+              <select formControlName="employmentType"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all">
+                @for (type of employmentTypes; track type.value) {
+                  <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Licencia -->
+        <div>
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-4">Licencia de Conducir</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Categoría</label>
+              <select formControlName="licenseCategory"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all">
+                @for (cat of licenseCategories; track cat) {
+                  <option [value]="cat">Categoría {{ cat }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Número de licencia</label>
+              <input formControlName="licenseNumber" type="text" placeholder="Ej: Q87654321"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'licenseNumber')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    @if (error()) {
+      <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg mx-8 mb-4">
+        <span>⚠️</span><span>{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Footer -->
+    <div class="px-8 py-5 border-t border-gray-100 flex justify-between sticky bottom-0 bg-white">
+      <button (click)="close.emit()"
+        class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
+        [disabled]="loading()">
+        Cancelar
+      </button>
+      <button (click)="submit()"
+        [disabled]="loading()"
+        class="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-semibold transition-all flex items-center gap-2">
+        @if (loading()) {
+          <iconify-icon icon="mdi:loading" class="animate-spin text-base"></iconify-icon>
+          Registrando...
+        } @else {
+          ✓ Registrar conductor
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div class="flex flex-col gap-6">
+
+  <!-- Acciones -->
+  <div class="flex items-center justify-between">
+    <div class="flex gap-3 flex-wrap">
+      <div class="relative">
+        <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
+        <input [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+          placeholder="Buscar por nombre o email..."
+          class="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 w-72" />
+      </div>
+      <select [ngModel]="filterRole()" (ngModelChange)="filterRole.set($event)"
+        class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 text-gray-600">
+        <option value="">Todos los roles</option>
+        @for (key of roleKeys; track key) {
+          <option [value]="key">{{ roleLabels[key] }}</option>
+        }
+      </select>
+    </div>
+    <button (click)="showForm.set(true)"
+      class="flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-all">
+      <iconify-icon icon="mdi:plus" class="text-lg"></iconify-icon>
+      Nuevo usuario
+    </button>
+  </div>
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+      <iconify-icon icon="mdi:alert-circle" class="text-lg shrink-0"></iconify-icon>
+      <span>{{ error() }}</span>
+      <button (click)="load()" class="ml-auto text-xs underline">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla -->
+  <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+    @if (loading()) {
+      <div class="flex items-center justify-center py-16 text-gray-400 gap-3">
+        <iconify-icon icon="mdi:loading" class="text-2xl animate-spin"></iconify-icon>
+        <span class="text-sm">Cargando usuarios...</span>
+      </div>
+    } @else if (filtered().length === 0) {
+      <div class="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+        <iconify-icon icon="mdi:account-off" class="text-4xl"></iconify-icon>
+        <p class="text-sm">No se encontraron usuarios</p>
+      </div>
+    } @else {
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-100">
+          <tr>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Usuario</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rol</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Creado</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filtered(); track user.id) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+              <td class="px-5 py-3.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                    <span class="text-violet-700 text-xs font-bold">
+                      {{ (user.firstName || user.email).charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-800">{{ fullName(user) }}</p>
+                    <p class="text-xs text-gray-400">{{ user.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3.5">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ roleColors[user.role] }}">
+                  {{ roleLabels[user.role] }}
+                </span>
+              </td>
+             
+              <td class="px-5 py-3.5">
+                <button (click)="toggleStatus(user)"
+                  class="px-2.5 py-1 rounded-full text-xs font-semibold transition-all hover:opacity-80"
+                  [ngClass]="user.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </button>
+              </td>
+              <td class="px-5 py-3.5 text-gray-400 text-xs">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+              <td class="px-5 py-3.5">
+                <div class="flex items-center gap-1">
+                  <button (click)="editId.set(user.id)"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-yellow-50 text-gray-400 hover:text-yellow-600 transition-all">
+                    <iconify-icon icon="mdi:pencil-outline" class="text-lg"></iconify-icon>
+                  </button>
+                  <button (click)="deleteId.set(user.id)"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-lg"></iconify-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+</div>
+
+<!-- Modales -->
+<app-user-form
+  [isOpen]="showForm()"
+  (close)="showForm.set(false)"
+  (created)="onCreated()"
+/>
+<app-user-edit-modal
+  [isOpen]="editId() !== null"
+  [userId]="editId()"
+  (close)="editId.set(null)"
+  (updated)="onUpdated()"
+/>
+<app-user-delete-modal
+  [isOpen]="deleteId() !== null"
+  [userId]="deleteId()"
+  (close)="deleteId.set(null)"
+  (deleted)="onDeleted()"
+/>

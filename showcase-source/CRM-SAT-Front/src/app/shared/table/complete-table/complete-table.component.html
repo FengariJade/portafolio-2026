@@ -1,0 +1,291 @@
+<p-card
+  styleClass="!h-full [&_.p-card-body]:h-full [&_.p-card-content]:h-full [&_.p-card-content]:overflow-y-auto [&_.p-card-content]:overflow-y-auto !bg-terciario"
+>
+  <div class="!h-full flex flex-col gap-3">
+    <div class="flex-0 grid grid-cols-2 gap-4">
+      <div class="flex items-center gap-2">
+        <btn-custom
+          severity="secondary"
+          tooltip="Actualizar tabla"
+          icon="ic:outline-refresh"
+          styleClass="action-btn"
+          (click)="sendSearch()"
+        />
+        <input
+          pInputText
+          [(ngModel)]="searchText"
+          placeholder="Buscar"
+          class="
+            !rounded-full
+            !text-sm
+            !h-10
+            min-w-72
+            bg-cuaternario
+            border
+            !border-transparent
+            focus:border-[#dad9dd]
+            transition-all
+            duration-200
+          "
+        />
+        <btn-custom
+          severity="primary"
+          label="Filtrar"
+          [text]="false"
+          styleClass="action-btn"
+          [disabled]="!searchText()"
+          (click)="sendSearch()"
+          icon="fa7-solid:filter"
+        />
+        <btn-custom
+          severity="secondary"
+          label="Limpiar"
+          [text]="false"
+          styleClass="action-btn"
+          [disabled]="!searchText()"
+          (click)="cleanFilter()"
+          icon="streamline-sharp:clean-broom-wipe-solid"
+        />
+
+      </div>
+      <div class="flex justify-end items-center gap-2">
+        <div class="w-20">
+          <p class="font-semibold text-gray-700 text-sm">Ordenar por:</p>
+        </div>
+        <!-- cambiar -->
+        <p-select
+          [options]="orderOptions"
+          [(ngModel)]="orderField"
+          (onChange)="sendSearch()"
+          styleClass="!w-100 !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+          panelStyleClass="!text-sm"
+          appendTo="body"
+        />
+      </div>
+    </div>
+    <div class="flex-1 overflow-y-auto">
+      <div class="h-full">
+        <p-table
+          [value]="dataTable"
+          [columns]="cols"
+          stripedRows
+          [scrollable]="true"
+          styleClass="h-full"
+          scrollHeight="100%"
+          styleClass="table-header-light "
+        >
+          <ng-template #header let-columns>
+            <tr class="bg-accent border-accent">
+              <th
+                *ngFor="let col of columns"
+                [ngClass]="[col.widthClass ? col.widthClass : '']"
+                class="bg-accent border-accent"
+              >
+                <div
+                  [ngClass]="[
+                    'text-xs uppercase !text-white',
+                    col.align ? 'text-' + col.align : 'text-start'
+                  ]"
+                >
+                  {{ col.header }}
+                </div>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-row>
+            <tr class="bg-primario">
+              @for (col of cols ; track col.header) {
+              <td 
+                [ngClass]="[col.widthClass ? col.widthClass : '']"
+                class="bg-primario"
+              >
+                @switch (col.type) { @case ('boolean') {
+                <div
+                  class="flex justify-center items-center text-center text-sm font-light capitalize italic"
+                >
+                  @if (col.isTag) {
+                  <p-tag
+                    styleClass="!rounded-full"
+                    [value]="row[col.field] ? col.trueText : col.falseText"
+                    [severity]="row[col.field] ? 'success' : 'warn'"
+                    (click)="handleButtonClick(col.onClick, row)"
+                  />
+                  } @else {
+                  {{ row[col.field] ? col.trueText : col.falseText }}
+                  }
+                </div>
+                } @case ('date') {
+                <div class="w-full flex flex-col justify-center items-center">
+                  @for (f of col.fields; track f.field) {
+                  <p [class]="f.textClass">
+                    {{
+                      getFieldValue(row, f.field)
+                        | date : col.format || "dd/MM/yyyy"
+                    }}
+                  </p>
+                  }
+                </div>
+                } @case ('number') {
+                <div class="w-full flex flex-col justify-center items-center">
+                  @for (f of col.fields; track f.field) {
+                  <p [class]="f.textClass">
+                    {{ getFieldValue(row, f.field) | number : col.digitsInfo }}
+                  </p>
+                  }
+                </div>
+                } @case ('html'){
+                <div class="flex items-center">
+                  <div [innerHTML]="row[col.field]"></div>
+                </div>
+                } @case ('buttons') {
+                <div class="flex justify-center items-center gap-1">
+                  @for (btn of col.buttons; track btn.icon) { @if
+                  (!btn.badgeField) { @if (btn.showDot && !isButtonDisabled(btn,
+                  row)) {
+                  <p-overlaybadge severity="info">
+                    <div
+                      class="p-0.5 cursor-pointer"
+                      [pTooltip]="btn.tooltip"
+                      tooltipPosition="top"
+                      tooltipStyleClass="!text-xs text-center !font-normal !p-0"
+                      (click)="handleButtonClick(btn.onClick, row)"
+                    >
+                      <iconify-icon [icon]="btn.icon" class="text-lg" />
+                    </div>
+                  </p-overlaybadge>000
+                  } @else {
+                  <btn-custom
+                    [severity]="btn.severity"
+                    [icon]="btn.icon"
+                    [tooltip]="btn.tooltip"
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } }@else{
+                  <btn-custom
+                    *ngIf="isButtonDisabled(btn, row)"
+                    severity="contrast"
+                    icon="fluent:channel-share-12-regular"
+                    tooltip="Asignar canales"
+                    [disabled]="true"
+                  />
+                  <p-overlaybadge
+                    *ngIf="!isButtonDisabled(btn, row)"
+                    [value]="row[btn.badgeField]?.length"
+                    severity="info"
+                    badgeSize="small"
+                  >
+                    <btn-custom
+                      [severity]="btn.severity"
+                      [icon]="btn.icon"
+                      [tooltip]="btn.tooltip"
+                      (click)="handleButtonClick(btn.onClick, row)"
+                      [disabled]="isButtonDisabled(btn, row)"
+                    />
+                  </p-overlaybadge>
+                  } }
+                </div>
+                } @case ('custom-buttons') {
+                <div class="flex justify-center items-center gap-1">
+                  @for (btn of col.buttons; track btn.component) { @switch
+                  (btn.component) { @case ('button-edit') {
+                  <button-edit
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('btn-delete') {
+                  <btn-delete
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('btn-view') {
+                  <btn-view
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('button-manage') {
+                  <button-manage
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('button-count') {
+                  <button-count
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('button-progress') {
+                  <button-progress
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  } @case ('button-statu') {
+                  <button-statu
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  }
+                  @case ('button-detail') {
+                  <button-detail
+                    (click)="handleButtonClick(btn.onClick, row)"
+                    [disabled]="isButtonDisabled(btn, row)"
+                  />
+                  }
+                   @case ('button-split') {
+                  <button-split [options]="btn.menuItems" [context]="row" />
+                  } } }
+                </div>
+                } @default {
+                <div class="flex items-center gap-2">
+                  <div *ngIf="!!col.avatarUrl && !!col.fields[0]" class="!w-8">
+                    <p-avatar class="bg-slate-200" size="normal" shape="circle">
+                      @if (!!row[col.avatarUrl]) {
+                      <p-image
+                        [src]="row[col.avatarUrl]"
+                        [alt]="row[col.fields[0].field]"
+                      />
+                      } @else {
+                      <span class="font-bold text-sm">
+                        {{ getInitial(row[col.fields[0].field]) }}
+                      </span>
+
+                      }
+                    </p-avatar>
+                  </div>
+                  <div class="w-full grid grid-cols-1">
+                    @for (f of col.fields; track f.field) {
+                    <p [class]="f.textClass">
+                      {{ getFieldValue(row, f.field) }}
+                    </p>
+                    }
+                  </div>
+                </div>
+                } }
+              </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <ng-template
+              [appSkeleton]="{
+                loading: loadingTable,
+                numCols: cols.length,
+                numRows: 4
+              }"
+            ></ng-template>
+          </ng-template>
+          <ng-template #footer>
+            <ng-template
+              [appPaginator]="{
+                totalItems: totalItems,
+                limit: limitItems,
+                offset: offsetItems,
+                limitOptions: limitOptions,
+                pageChange: onPageChange
+              }"
+            ></ng-template>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</p-card>

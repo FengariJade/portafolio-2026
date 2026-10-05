@@ -1,0 +1,182 @@
+<form [formGroup]="formData" class="grid grid-cols-1 gap-4">
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="idtipoConsulta"> Canal </label>
+    <p-select
+      id="categoria"
+      [options]="listCategoryChannels"
+      optionLabel="name"
+      optionValue="id"
+      formControlName="categoryId"
+      placeholder="Seleccione el canal"
+      appendTo="body"
+      class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+    />
+  </div>
+  <div class="flex flex-col space-y-1">
+    <label class="text-sm font-medium" for="nombreEstado">
+      Nombre<span class="text-sm text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <input
+        pInputText
+        id="nombre"
+        formControlName="name"
+        placeholder="Ej. Aprobado"
+        required
+        class="
+                w-full
+                pr-10
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+      />
+    </div>
+    <div
+      *ngIf="formData.controls.name.invalid && formData.controls.name.touched"
+    >
+      <small
+        class="text-xs text-red-500"
+        *ngIf="formData.controls.name.errors?.['required']"
+        >El nombre es requerido.</small
+      >
+    </div>
+  </div>
+
+  <!-- Descripcion -->
+  <div class="flex flex-col space-y-1">
+    <label class="text-sm font-medium" for="descripcion"> Descripción </label>
+    <textarea
+      id="descripcion"
+      rows="2"
+      cols="30"
+      pTextarea
+      formControlName="description"
+      class="
+                w-full
+                min-w-72
+
+                !rounded-[20px]
+                !text-sm
+
+                bg-cuaternario
+                !border
+                !border-transparent
+
+                px-4
+                py-2
+
+                focus:!border-[#dad9dd]
+                focus:outline-none
+
+                transition-all
+                duration-200
+
+                resize-none
+              "
+    ></textarea>
+  </div>
+
+  <!-- Color -->
+  <div class="flex flex-col space-y-1 w-full">
+    <label class="text-sm font-medium" for="Color">
+      Color <span class="text-sm text-red-500">*</span>
+    </label>
+
+    <p-colorPicker
+      id="color"
+      formControlName="color"
+      format="hex"
+      required
+      styleClass="!w-full"
+      panelClass="w-full"
+      appendTo="body"
+    ></p-colorPicker>
+
+    <div
+      *ngIf="formData.controls.color.invalid && formData.controls.color.touched"
+    >
+      <small
+        class="text-xs text-red-500"
+        *ngIf="formData.controls.color.errors?.['required']"
+      >
+        El Color es requerido.
+      </small>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="flex justify-self-end pt-2 gap-4">
+    <!-- <button-cancel (click)="onCancel()" /> -->
+
+    <button
+			pButton
+			type="button"
+			(click)="onCancel()"
+			class="
+			bg-cuaternario
+			!text-black
+			hover:!bg-[red]
+      hover:!border-[red]
+			hover:!text-white
+			!rounded-full
+			transition-all
+			duration-200
+			flex
+			items-center
+			gap-2
+			px-4
+			py-2"
+        >
+          <iconify-icon
+            icon="lucide:ban"
+            class="text-lg text-inherit"
+          ></iconify-icon>
+
+          <span class="font-medium">
+            Cancelar
+          </span>
+		</button>
+
+    <button-save
+      [label]="id ? 'Actualizar' : 'Guardar'"
+      [loading]="loading"
+      [disabled]="formData.invalid"
+      styleClass="
+    bg-cuaternario
+    !text-black
+    hover:bg-accent-7
+    hover:!text-white
+    !rounded-full
+    transition-all
+    duration-200
+    flex
+    items-center
+    gap-2
+    px-4
+    py-2
+  "
+      (click)="onSubmit()"
+    />
+	  
+  </div>
+</form>

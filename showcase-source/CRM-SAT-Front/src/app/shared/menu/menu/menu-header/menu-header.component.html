@@ -1,0 +1,12 @@
+<div class="pl-20 flex gap-4">
+  @for (item of listScreens; track item) {
+    <a 
+      [routerLink]="item.link" 
+      routerLinkActive="bg-black !text-white shadow-md"
+      class="px-4 py-2 rounded-full bg-[#ECEBF0] text-black font-medium 
+            hover:bg-[#dcdbdf] !hover:text-black transition-colors duration-300"
+    >
+      {{ item.label }}
+    </a>
+  }
+</div>

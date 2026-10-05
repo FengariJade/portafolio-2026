@@ -1,0 +1,337 @@
+<ng-container *ngIf="viewValue() === 'register'; else elseTemplate">
+  <div class="grid grid-cols-1 gap-4">
+    <div class="bg-gray-50 shadow !rounded-[30px] p-4">
+      <div class="flex gap-4">
+        <button
+          pButton
+          type="button"
+          (click)="changeView('list')"
+          class="
+          bg-cuaternario
+          !text-black
+          hover:!bg-[red]
+          hover:!border-[red]
+          hover:!text-white
+          !rounded-full
+          transition-all
+          duration-200
+          flex
+          items-center
+          gap-2
+          px-4
+          py-2"
+            >
+              <iconify-icon
+                icon="lucide:arrow-left"
+                class="text-lg text-inherit"
+              ></iconify-icon>
+
+              <span class="font-medium">
+                Volver
+              </span>
+        </button>
+
+        <h5 class="text-2xl font-semibold capitalize mt-2">
+          Registro de atenciones
+        </h5>
+      </div>
+    </div>
+    <app-register-assistance />
+  </div>
+</ng-container>
+
+<ng-template #elseTemplate>
+  <div class="grid grid-cols-1 gap-4">
+    <!-- Encabezado -->
+    <div class="bg-gray-50 shadow !rounded-[30px] p-4">
+      <div class="flex justify-between items-center">
+        <div class="ml-2">
+          <app-title-sat />
+        </div>
+
+        <button
+          pButton
+          type="button"
+          (click)="changeView('register')"
+          class="
+            bg-cuaternario
+            !text-black
+            hover:bg-accent-7
+            hover:!text-white
+            !rounded-full
+            transition-all
+            duration-200
+            flex
+            items-center
+            gap-2
+            px-4
+            py-2"
+              >
+                <iconify-icon
+                  icon="mdi:plus-circle-outline"
+                  class="text-lg text-inherit"
+                ></iconify-icon>
+
+                <span class="font-medium">
+                 Registrar atención
+                </span>
+          </button>
+      </div>
+    </div>
+
+    <div>
+      <!-- Tabs -->
+      <p-tabs
+        [(value)]="activeTab"
+        (valueChange)="onTabChange($event.toString())"
+        class="mb-4 custom-tabs-rounded custom-tabs"
+      >
+        <p-tablist>
+          <p-tab value="0">Mis atenciones</p-tab>
+          <p-tab value="1">Verificaciones de pago</p-tab>
+          <!-- <p-tab value="2">Atenciones cerradas</p-tab> -->
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel value="0" >
+            <p-table
+              [value]="tableChannelAttentionsFiltered"
+              [responsiveLayout]="'scroll'"
+              styleClass="table-header-light "
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Fecha/Hora
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Tipo de consulta
+                    </div>
+                  </th>
+
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Canal
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Contacto
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Detalle
+                    </div>
+                  </th>
+                  <!-- <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Usuario
+                    </div>
+                  </th> -->
+                  <!-- <th></th> -->
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{ item?.createdAt | date : "dd/MM/yyyy hh:ss a" }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{ item?.consultType?.name }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{
+                        channelSelected == 0
+                          ? "Oficina: " + (item?.office?.name ?? "SAT")
+                          : item?.categoryChannel?.name
+                      }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm font-light text-center">
+                      {{ item?.citizen?.name }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm font-light text-center">
+                      {{ item?.detail }}
+                    </p>
+                  </td>
+                  <!-- <td>
+                    <p class="text-sm font-light text-center">
+                      {{ item?.createdByUser?.displayName }}
+                    </p>
+                  </td> -->
+                </tr>
+              </ng-template>
+              <ng-template #emptymessage>
+                <tr>
+                  <td colspan="100">
+                    <div class="text-center text-sm font-light p-4">
+                      No se encontraron atenciones registradas
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-tabpanel>
+          <p-tabpanel value="1">
+            <p-table 
+              #dt2 [value]="filteredTickets" 
+              responsiveLayout="scroll"
+              styleClass="table-header-light "
+            >
+              <ng-template pTemplate="header">
+                <tr class="uppercase">
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Fecha/Hora
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Código contribuyente
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Contribuyente
+                    </div>
+                  </th>
+                  <th *ngIf="activeTab != '1'">
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Tipo
+                    </div>
+                  </th>
+                  <th *ngIf="activeTab != '1'">
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Canal
+                    </div>
+                  </th>
+                  <th *ngIf="activeTab != '1'">
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Método
+                    </div>
+                  </th>
+                  <th *ngIf="activeTab != '1'">
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Contacto Usado
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Resultado
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      class="flex justify-center items-center text-xs uppercase gap-4"
+                    >
+                      Sectorista
+                    </div>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{ item?.createdAt | date : "dd/MM/yyyy hh:ss a" }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{ item.portfolioDetail?.code }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-center font-light">
+                      {{ item.portfolioDetail?.taxpayerName }}
+                    </p>
+                  </td>
+                  <!-- <td>{{ item.estado }}</td> -->
+                  <td *ngIf="activeTab != '1'">
+                    <p class="text-sm text-center font-light">
+                      {{ item?.type }}
+                    </p>
+                  </td>
+                  <td *ngIf="activeTab != '1'">
+                    <p class="text-sm text-center font-light">
+                      {{ item?.channel }}
+                    </p>
+                  </td>
+                  <td *ngIf="activeTab != '1'">
+                    <p class="text-sm font-light text-center">
+                      {{ item?.method }}
+                    </p>
+                  </td>
+                  <td *ngIf="activeTab != '1'">
+                    <p class="text-sm font-light text-center">
+                      {{ item?.contact }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm font-light text-center">
+                      {{ item?.result }}
+                    </p>
+                  </td>
+                  <td>
+                    <p class="text-sm font-light text-center">
+                      {{ item?.createdByUser?.name }}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template #emptymessage>
+                <tr>
+                  <td colspan="100">
+                    <div class="text-center text-sm font-light p-4">
+                      No se encontraron verificaciones de pago
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+  </div>
+</ng-template>

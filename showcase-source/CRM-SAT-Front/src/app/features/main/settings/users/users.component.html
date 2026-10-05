@@ -1,0 +1,51 @@
+<div class="grid grid-cols-1 gap-4">
+  <!-- Encabezado -->
+  <div class="bg-gray-50 shadow !rounded-[30px] p-4">
+    <div class="flex justify-between items-center">
+      <div class="ml-2">
+        <app-title-sat />
+      </div>
+    
+      <button
+        pButton
+        type="button"
+        (click)="addNew()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:bg-accent-7
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+            <iconify-icon
+              icon="mdi:plus-circle-outline"
+              class="text-lg text-inherit"
+            ></iconify-icon>
+
+            <span class="font-medium">
+              Nuevo Usuario
+            </span>
+      </button>
+    </div>
+  </div>
+
+  <section class="h-[calc(100vh-17rem)] overflow-y-auto">
+    <complete-table
+      [cols]="cols"
+      [orderBy]="orderBy"
+      [dataTable]="dataTable"
+      [total]="totalItems"
+      [limit]="limit()"
+      [offset]="offset()"
+      (actionClicked)="onTableAction($event)"
+      (searchChange)="searchChange($event)"
+    />
+  </section>
+</div>

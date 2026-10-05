@@ -1,0 +1,8 @@
+{
+  "/v1": {
+    "target": "https://api-flotexs.bartech.pe",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

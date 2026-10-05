@@ -1,0 +1,112 @@
+<!--
+  Formulario multi-paso para registrar un nuevo paquete.
+  Multi-step form for registering a new package.
+
+  Flujo / Flow:
+    Paso 0 — Selección de tipo de remitente (persona / empresa)
+    Paso 1 — Datos de contacto (remitente + destinatario)
+    Paso 2 — Paquetes + Direcciones + Precio
+    Paso 3 — Confirmación y envío
+-->
+
+<div class="h-full flex flex-col p-8 overflow-y-auto">
+
+  @if (currentStep() === 0) {
+    <div class="flex-1 flex flex-col items-center justify-center gap-8">
+      <div class="text-center">
+        <h2 class="text-5xl font-bold text-gray-800 mb-4">Registrar Paquete</h2>
+        <p class="text-gray-500 text-xl">¿El remitente es una persona o una empresa?</p>
+      </div>
+      <div class="flex gap-16 mt-6">
+        <button (click)="selectType('person')"
+          class="flex flex-col items-center justify-center gap-4 w-80 h-80 bg-white border-2 border-gray-200 rounded-3xl shadow-sm hover:border-violet-500 hover:shadow-xl hover:scale-105 transition-all duration-200 group">
+          <iconify-icon icon="mdi:account" class="text-gray-300 group-hover:text-violet-500 transition-colors duration-200" style="font-size: 120px"></iconify-icon>
+          <span class="text-gray-700 font-bold text-2xl group-hover:text-violet-600 transition-colors">Persona</span>
+        </button>
+        <button (click)="selectType('company')"
+          class="flex flex-col items-center justify-center gap-4 w-80 h-80 bg-white border-2 border-gray-200 rounded-3xl shadow-sm hover:border-violet-500 hover:shadow-xl hover:scale-105 transition-all duration-200 group">
+          <iconify-icon icon="mdi:office-building" class="text-gray-300 group-hover:text-violet-500 transition-colors duration-200" style="font-size: 120px"></iconify-icon>
+          <span class="text-gray-700 font-bold text-2xl group-hover:text-violet-600 transition-colors">Empresa</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (currentStep() > 0) {
+    <div class="pt-20 w-full flex flex-col flex-1">
+
+      <div class="mb-8 pl-10">
+        <h2 class="text-3xl font-bold text-gray-800">Registrar Paquete</h2>
+        <p class="text-gray-500 text-base mt-1">
+          Remitente: <span class="text-violet-600 font-semibold">{{ senderType() === 'person' ? 'Persona' : 'Empresa' }}</span>
+        </p>
+      </div>
+
+      <!-- Stepper — 3 pasos -->
+      <div class="flex items-center mb-10 pl-10">
+        @for (step of steps; track step.number; let last = $last) {
+          <div class="flex items-center">
+            <div class="flex flex-col items-center">
+              <div class="w-11 h-11 rounded-full flex items-center justify-center text-base font-bold transition-all"
+                [class]="currentStep() >= step.number ? 'bg-violet-600 text-white' : 'bg-gray-200 text-gray-400'">
+                {{ currentStep() > step.number ? '✓' : step.number }}
+              </div>
+              <span class="text-sm mt-1 font-medium"
+                [class]="currentStep() >= step.number ? 'text-violet-600' : 'text-gray-400'">
+                {{ step.label }}
+              </span>
+            </div>
+            @if (!last) {
+              <div class="h-0.5 flex-1 min-w-16 mx-3 mb-5 transition-all"
+                [class]="currentStep() > step.number ? 'bg-violet-600' : 'bg-gray-200'"></div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Contenido del paso activo -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex-1">
+
+        @if (currentStep() === 1) {
+          <app-contacts-step
+            [senderType]="senderType()!"
+            [initial]="contactsData"
+            (next)="onContactsNext($event)"
+            (prev)="onPrev(1)"
+          />
+        }
+
+        @if (currentStep() === 2) {
+          <app-package-step
+            [initial]="packageData"
+            (stepDone)="onPackageNext($event)"
+            (prev)="onPrev(2)"
+          />
+        }
+
+        @if (currentStep() === 3) {
+          <app-confirm-step
+            [sender]="contactsData!.sender"
+            [recipient]="contactsData!.recipient"
+            [packageData]="packageData!"
+            [senderType]="senderType()!"
+            [loading]="loading()"
+            [error]="error()"
+            (prev)="onPrev(3)"
+            (submit)="submit()"
+          />
+        }
+
+      </div>
+
+    </div>
+  }
+
+    @if (ticketData()) {
+    <app-shipping-ticket-modal
+      [ticket]="ticketData()!"
+      (close)="closeTicket()"
+    />
+  }
+
+</div>

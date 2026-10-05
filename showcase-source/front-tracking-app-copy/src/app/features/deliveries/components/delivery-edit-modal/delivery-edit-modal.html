@@ -1,0 +1,108 @@
+@if (package()) {
+  <div
+    class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+    (click)="close.emit()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">Editar Entrega</h3>
+          <p class="text-sm font-mono mt-1 text-violet-600">{{ package()!.packageCode }}</p>
+        </div>
+        <button (click)="close.emit()"
+          class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 text-xl">✕</button>
+      </div>
+
+      <form [formGroup]="editForm" class="px-8 py-6 flex flex-col gap-5">
+
+        <div>
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Persona de recojo</p>
+          <div class="grid grid-cols-3 gap-4">
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm text-gray-600">Nombre</label>
+              <input formControlName="pickupName" type="text"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-all"/>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm text-gray-600">Tipo documento</label>
+              <select formControlName="pickupDocumentType"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-all">
+                <option value="">Seleccionar</option>
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="PASAPORTE">Pasaporte</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm text-gray-600">Número documento</label>
+              <input formControlName="pickupDocumentNumber" type="text"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-all"/>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm text-gray-600">Notas</label>
+          <textarea formControlName="notes" rows="3"
+            placeholder="Instrucciones adicionales..."
+            class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-all resize-none"></textarea>
+        </div>
+
+        <!-- Resumen solo lectura -->
+        <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-3">
+          <div>
+            <p class="text-xs text-gray-400">Remitente</p>
+            <p class="text-sm font-medium text-gray-700">{{ package()!.senderName }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ package()!.senderAddress }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Destinatario</p>
+            <p class="text-sm font-medium text-gray-700">{{ package()!.receiverName }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ package()!.receiverAddress }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Dimensiones</p>
+            <p class="text-sm text-gray-700">
+              {{ package()!.weightKg }} kg ·
+              {{ package()!.lengthCm }}×{{ package()!.widthCm }}×{{ package()!.heightCm }} cm
+            </p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Estado</p>
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+              [class]="package()!.trackingStatus | statusLabel:'class'">
+              {{ package()!.trackingStatus | statusLabel }}
+            </span>
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
+            <span>⚠️</span><span>{{ error() }}</span>
+          </div>
+        }
+
+      </form>
+
+      <div class="px-8 py-5 border-t border-gray-100 flex justify-between">
+        <button (click)="close.emit()"
+          class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">
+          Cancelar
+        </button>
+        <button (click)="onSave()" [disabled]="loading()"
+          class="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-semibold transition-all">
+          {{ loading() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,128 @@
+<div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+  (click)="close.emit()">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 sticky top-0 bg-white z-10">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">Registrar Camión</h3>
+        <p class="text-sm text-gray-400 mt-0.5">Completa los datos del vehículo</p>
+      </div>
+      <button (click)="close.emit()"
+        class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 text-xl">✕</button>
+    </div>
+
+    <div class="px-8 py-6">
+      <form [formGroup]="form" class="flex flex-col gap-6">
+
+        <!-- Toggle Propio / Tercerizado -->
+        <div>
+          <label class="text-sm font-medium text-gray-700 block mb-3">Tipo de vehículo</label>
+          <div class="flex rounded-xl border border-gray-200 overflow-hidden w-fit">
+            <button type="button"
+              (click)="toggleType(true)"
+              class="px-6 py-3 text-sm font-semibold transition-all"
+              [class]="isOwn() ? 'bg-violet-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'">
+              🚛 Propio
+            </button>
+            <button type="button"
+              (click)="toggleType(false)"
+              class="px-6 py-3 text-sm font-semibold transition-all border-l border-gray-200"
+              [class]="!isOwn() ? 'bg-violet-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'">
+              🤝 Tercerizado
+            </button>
+          </div>
+        </div>
+
+        <!-- Datos básicos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div class="flex flex-col gap-2 sm:col-span-2">
+            <label class="text-sm font-medium text-gray-700">Placa</label>
+            <input formControlName="licensePlate" type="text" placeholder="Ej: ABC-123"
+              class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all uppercase" />
+            @if (isInvalid(form, 'licensePlate')) {
+              <span class="text-red-500 text-xs">Campo requerido</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700">Marca</label>
+            <input formControlName="brand" type="text" placeholder="Ej: Volvo"
+              class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+            @if (isInvalid(form, 'brand')) {
+              <span class="text-red-500 text-xs">Campo requerido</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700">Modelo</label>
+            <input formControlName="model" type="text" placeholder="Ej: FH16"
+              class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+            @if (isInvalid(form, 'model')) {
+              <span class="text-red-500 text-xs">Campo requerido</span>
+            }
+          </div>
+
+          <!-- Proveedor — solo si es tercerizado -->
+          @if (!isOwn()) {
+            <div class="flex flex-col gap-2 sm:col-span-2">
+              <label class="text-sm font-medium text-gray-700">Nombre del proveedor</label>
+              <input formControlName="providerName" type="text" placeholder="Ej: Transportes García SAC"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'providerName')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+          }
+
+        </div>
+
+        <!-- Capacidades -->
+        <div>
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-4">Capacidades</p>
+          <div class="grid grid-cols-2 gap-5">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Peso máximo (kg)</label>
+              <input formControlName="maxWeightKg" type="number" placeholder="20000"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'maxWeightKg')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-700">Volumen máximo (m³)</label>
+              <input formControlName="maxVolumeM3" type="number" placeholder="80"
+                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all" />
+              @if (isInvalid(form, 'maxVolumeM3')) {
+                <span class="text-red-500 text-xs">Campo requerido</span>
+              }
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg mx-8 mb-4">
+        <span>⚠️</span><span>{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Footer -->
+    <div class="px-8 py-5 border-t border-gray-100 flex justify-between sticky bottom-0 bg-white">
+      <button (click)="close.emit()"
+        class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+        Cancelar
+      </button>
+      <button (click)="submit()" [disabled]="loading()"
+        class="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all">
+        @if (loading()) { Registrando... } @else { ✓ Registrar camión }
+      </button>
+    </div>
+
+  </div>
+</div>

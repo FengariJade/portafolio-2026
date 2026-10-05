@@ -1,0 +1,291 @@
+<div class="min-h-screen flex">
+
+  <!-- Panel izquierdo — imagen fija -->
+  <div class="hidden lg:flex w-1/2 relative overflow-hidden">
+    <img
+      src="image/image-login.webp"
+      alt="Login background"
+      class="absolute inset-0 w-full h-full object-cover" />
+  </div>
+
+  <!-- Panel derecho -->
+  <div class="flex-1 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white overflow-hidden">
+
+    <div class="lg:hidden mb-8">
+      <span class="text-violet-600 font-bold text-xl">🚛 Flotex</span>
+    </div>
+
+    <!-- Contenedor animado -->
+    <div class="max-w-md w-full mx-auto transition-all duration-250"
+      [style.opacity]="animating ? '0' : '1'"
+      [style.transform]="animating ? 'translateY(12px)' : 'translateY(0)'"
+      style="transition: opacity 0.25s ease, transform 0.25s ease;">
+
+      <!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
+      @if (mode() === 'login') {
+
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">¡Bienvenido!</h2>
+        <p class="text-gray-500 text-sm mb-8">Ingresa tus credenciales para acceder al sistema.</p>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="email" type="email" placeholder="Correo electrónico"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+              <span class="text-red-500 text-xs">El correo es requerido</span>
+            }
+            @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
+              <span class="text-red-500 text-xs">Correo inválido</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <div class="relative">
+              <input formControlName="password" [type]="showPassword ? 'text' : 'password'"
+                placeholder="Contraseña"
+                class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white pr-16" />
+              <button type="button" (click)="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-violet-600 transition-colors">
+                {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+            @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+              <span class="text-red-500 text-xs">La contraseña es requerida</span>
+            }
+            @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')) {
+              <span class="text-red-500 text-xs">Mínimo 6 caracteres</span>
+            }
+          </div>
+
+          @if (error) {
+            <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
+              <span>⚠️</span><span>{{ error }}</span>
+            </div>
+          }
+
+          <button type="submit" [disabled]="loginForm.invalid || loading"
+            class="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition text-sm mt-1">
+            {{ loading ? 'Cargando...' : 'Ingresar al sistema' }}
+          </button>
+
+          <div class="flex flex-col items-center gap-2 mt-1">
+            <a href="#" class="text-sm text-gray-400 hover:text-violet-600 transition-colors">
+              ¿Olvidaste tu contraseña?
+            </a>
+            <p class="text-sm text-gray-400">
+              ¿No tienes cuenta?
+              <button type="button" (click)="switchMode('register-step1')"
+                class="text-violet-600 font-medium hover:underline ml-1">
+                Crear cuenta
+              </button>
+            </p>
+          </div>
+
+        </form>
+      }
+
+      <!-- ══════════════════════════ REGISTRO PASO 1 ══════════════════════════ -->
+      @if (mode() === 'register-step1') {
+
+        <!-- Stepper -->
+        <div class="flex items-center mb-6">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-violet-600 text-white flex items-center justify-center text-sm font-bold">1</div>
+            <span class="text-xs mt-1 text-violet-600 font-medium">Empresa</span>
+          </div>
+          <div class="h-0.5 flex-1 mx-3 mb-4 bg-gray-200"></div>
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold">2</div>
+            <span class="text-xs mt-1 text-gray-400">Administrador</span>
+          </div>
+        </div>
+
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Crear cuenta</h2>
+        <p class="text-gray-500 text-sm mb-6">Primero registra los datos de tu empresa.</p>
+
+        <form [formGroup]="tenantForm" class="flex flex-col gap-4">
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="name" type="text" placeholder="Razón social"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (isInvalid(tenantForm, 'name')) {
+              <span class="text-red-500 text-xs">Campo requerido</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="ruc" type="text" placeholder="RUC (11 dígitos)" maxlength="11"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (isInvalid(tenantForm, 'ruc')) {
+              <span class="text-red-500 text-xs">RUC inválido (11 dígitos)</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="schemaName" type="text" placeholder="Identificador (ej: mi_empresa)"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            <span class="text-xs text-gray-400">Solo minúsculas, números y guión bajo.</span>
+            @if (isInvalid(tenantForm, 'schemaName')) {
+              <span class="text-red-500 text-xs">Formato inválido</span>
+            }
+          </div>
+
+          @if (error) {
+            <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
+              <span>⚠️</span><span>{{ error }}</span>
+            </div>
+          }
+
+          <button type="button" (click)="submitTenant()" [disabled]="loading"
+            class="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition text-sm">
+            {{ loading ? 'Creando empresa...' : 'Continuar →' }}
+          </button>
+
+          <p class="text-center text-sm text-gray-400">
+            ¿Ya tienes cuenta?
+            <button type="button" (click)="switchMode('login')"
+              class="text-violet-600 font-medium hover:underline ml-1">
+              Iniciar sesión
+            </button>
+          </p>
+
+        </form>
+      }
+
+      <!-- ══════════════════════════ REGISTRO PASO 2 ══════════════════════════ -->
+      @if (mode() === 'register-step2') {
+
+        <!-- Stepper -->
+        <div class="flex items-center mb-6">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-violet-200 text-violet-600 flex items-center justify-center text-sm font-bold">✓</div>
+            <span class="text-xs mt-1 text-violet-400">Empresa</span>
+          </div>
+          <div class="h-0.5 flex-1 mx-3 mb-4 bg-violet-400"></div>
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-violet-600 text-white flex items-center justify-center text-sm font-bold">2</div>
+            <span class="text-xs mt-1 text-violet-600 font-medium">Administrador</span>
+          </div>
+        </div>
+
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Crear cuenta</h2>
+        <p class="text-gray-500 text-sm mb-6">Ahora configura el acceso del administrador.</p>
+
+        <form [formGroup]="adminForm" class="flex flex-col gap-4">
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="email" type="email" placeholder="Correo del administrador"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (isInvalid(adminForm, 'email')) {
+              <span class="text-red-500 text-xs">Correo inválido</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="password" type="password" placeholder="Contraseña (mín. 8 caracteres)"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (isInvalid(adminForm, 'password')) {
+              <span class="text-red-500 text-xs">Mínimo 8 caracteres</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <input formControlName="confirmPassword" type="password" placeholder="Confirmar contraseña"
+              class="w-full border border-gray-200 rounded-xl focus:border-violet-600 focus:ring-2 focus:ring-violet-100 outline-none px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white" />
+            @if (adminForm.get('confirmPassword')?.touched && passwordMismatch) {
+              <span class="text-red-500 text-xs">Las contraseñas no coinciden</span>
+            }
+          </div>
+
+          @if (error) {
+            <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
+              <span>⚠️</span><span>{{ error }}</span>
+            </div>
+          }
+
+          <button type="button" (click)="submitAdmin()" [disabled]="loading"
+            class="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition text-sm">
+            {{ loading ? 'Registrando...' : '✓ Crear cuenta' }}
+          </button>
+
+          <button type="button" (click)="switchMode('register-step1')"
+            class="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium py-3 rounded-xl transition text-sm">
+            ← Volver
+          </button>
+
+        </form>
+      }
+
+    </div>
+
+    <!-- Link -->
+    <div class="text-center mt-8">
+      <button (click)="showTrackingModal = true"
+        class="px-6 py-3 text-sm font-medium text-violet-600 border border-violet-200 hover:bg-violet-50 rounded-xl transition-all flex items-center gap-2 mx-auto">
+        <iconify-icon icon="mdi:package-variant-closed-check" style="font-size:18px"></iconify-icon>
+        Rastrear un paquete
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal tracking -->
+@if (showTrackingModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+    (click)="showTrackingModal = false">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+            <iconify-icon icon="mdi:package-variant-closed-check" class="text-violet-600" style="font-size:22px"></iconify-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-800">Rastrear paquete</h3>
+            <p class="text-xs text-gray-400">Ingresa tu número de tracking</p>
+          </div>
+        </div>
+        <button (click)="showTrackingModal = false"
+          class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+          <iconify-icon icon="mdi:close" class="text-gray-500"></iconify-icon>
+        </button>
+      </div>
+
+      <!-- Input -->
+      <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-violet-300 focus-within:border-violet-400 transition-all mb-4">
+        <iconify-icon icon="mdi:barcode-scan" class="text-gray-400 shrink-0" style="font-size:20px"></iconify-icon>
+        <input
+          type="text"
+          placeholder="Ej: AA4A57759FD6"
+          [(ngModel)]="trackingCode"
+          (keyup.enter)="goToTracking()"
+          class="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400 font-mono" />
+      </div>
+
+      @if (trackingError) {
+        <p class="text-xs text-red-500 mb-4 bg-red-50 px-3 py-2 rounded-lg">
+          Ingresa un código de tracking válido
+        </p>
+      }
+
+      <!-- Botones -->
+      <div class="flex gap-3">
+        <button (click)="showTrackingModal = false"
+          class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+          Cancelar
+        </button>
+        <button (click)="goToTracking()"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors flex items-center justify-center gap-2">
+          <iconify-icon icon="mdi:magnify" style="font-size:16px"></iconify-icon>
+          Rastrear
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

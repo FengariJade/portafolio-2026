@@ -1,0 +1,249 @@
+<div class="h-full flex flex-col p-8 overflow-y-auto">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8 pt-22">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">Manifiestos</h2>
+      <p class="text-gray-500 text-base mt-1">Tablero de control de despachos</p>
+    </div>
+    <button (click)="openForm()"
+      class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-all">
+      + Crear manifiesto
+    </button>
+  </div>
+
+  @if (errorLoad()) {
+    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{{ errorLoad() }}</div>
+  }
+
+  <!-- KPI cards -->
+  <div class="grid grid-cols-5 gap-4 mb-6">
+    @for (s of statusKeys; track s) {
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex flex-col gap-1 cursor-pointer transition-all hover:shadow-md"
+        [class.ring-2]="selectedStatus() === s"
+        [class.ring-violet-400]="selectedStatus() === s"
+        (click)="selectedStatus.set(selectedStatus() === s ? 'all' : s)">
+        <span class="text-2xl font-bold text-gray-800">
+            {{ countByStatus(s) }}
+        </span>
+        <span class="text-xs font-medium px-2 py-0.5 rounded-full w-fit" [ngClass]="s | manifestStatus:'class'">
+            {{ s | manifestStatus }}
+        </span>
+        </div>
+    }
+    </div>
+
+  <!-- Filtros -->
+  <div class="flex flex-wrap items-center gap-3 mb-6">
+
+    <div class="flex items-center gap-2 flex-1 min-w-64 bg-white border border-gray-200 rounded-xl px-4 py-2.5">
+      <iconify-icon icon="mdi:magnify" class="text-gray-400 text-xl shrink-0"></iconify-icon>
+      <input type="text" placeholder="Buscar por código, chofer, camión..."
+        [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)"
+        class="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400" />
+      @if (searchQuery()) {
+        <button (click)="searchQuery.set('')" class="text-gray-400 hover:text-gray-600">
+          <iconify-icon icon="mdi:close"></iconify-icon>
+        </button>
+      }
+    </div>
+
+    <!-- Filtro estado -->
+    <div class="relative">
+      <select [ngModel]="selectedStatus()" (ngModelChange)="onStatusChange($event)"
+        class="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer">
+        <option value="all">Todos los estados</option>
+        <option value="DRAFT">Borrador</option>
+        <option value="READY_TO_DISPATCH">Listo para despacho</option>
+        <option value="IN_TRANSIT">En tránsito</option>
+        <option value="COMPLETED">Completado</option>
+        <option value="CANCELLED">Cancelado</option>
+      </select>
+      <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+    </div>
+
+    <!-- Filtro chofer -->
+    <div class="relative">
+      <select [ngModel]="selectedDriverId()" (ngModelChange)="onDriverChange($event)"
+        class="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer">
+        <option value="all">Todos los choferes</option>
+        @for (d of drivers(); track d.id) {
+          <option [value]="d.id">{{ d.firstName }} {{ d.lastName }}</option>
+        }
+      </select>
+      <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+    </div>
+
+    <!-- Filtro camión -->
+    <div class="relative">
+      <select [ngModel]="selectedTruckId()" (ngModelChange)="onTruckChange($event)"
+        class="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer">
+        <option value="all">Todos los camiones</option>
+        @for (t of trucks(); track t.id) {
+          <option [value]="t.id">{{ t.licensePlate }} — {{ t.brand }}</option>
+        }
+      </select>
+      <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+    </div>
+
+    @if (hasActiveFilters) {
+      <button (click)="clearFilters()"
+        class="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-red-500 bg-red-50 hover:bg-red-100 rounded-xl">
+        <iconify-icon icon="mdi:filter-off"></iconify-icon>
+        Limpiar
+      </button>
+    }
+
+    <span class="ml-auto text-sm text-gray-400">
+      {{ totalItems() }} manifiesto{{ totalItems() !== 1 ? 's' : '' }}
+    </span>
+  </div>
+
+  <!-- Tabla -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-visisble">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Manifiesto</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Chofer</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Camión</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Carga</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Salida prog.</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado</th>
+          <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        @for (m of filteredManifests(); track m.id) {
+          <tr class="hover:bg-gray-50 transition-colors">
+
+            <!-- Manifiesto -->
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center shrink-0">
+                  <iconify-icon icon="mdi:file-document-outline" style="font-size:18px"></iconify-icon>
+                </div>
+                <div>
+                  <p class="font-mono font-semibold text-gray-800">{{ m.manifestCode }}</p>
+                  <p class="text-xs text-gray-400">{{ m.createdAt | date:'dd MMM yyyy' }}</p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Chofer -->
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="mdi:account-tie" class="text-gray-400" style="font-size:16px"></iconify-icon>
+                <span class="text-gray-700">{{ driverName(m.driverId) }}</span>
+              </div>
+            </td>
+
+            <!-- Camión -->
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="mdi:truck" class="text-gray-400" style="font-size:16px"></iconify-icon>
+                <span class="font-mono text-gray-700">{{ truckPlate(m.truckId) }}</span>
+              </div>
+            </td>
+
+            <!-- Carga -->
+            <td class="px-6 py-4">
+              <p class="text-gray-700">{{ m.totalWeightKg }} kg</p>
+              <p class="text-xs text-gray-400">{{ m.totalVolumeM3 }} m³</p>
+            </td>
+
+            <!-- Salida -->
+            <td class="px-6 py-4 text-gray-600">
+              {{ m.scheduledDepartureAt ? (m.scheduledDepartureAt | date:'dd MMM, HH:mm') : '—' }}
+            </td>
+
+            <!-- Estado -->
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="m.status | manifestStatus:'class'">
+                {{ m.status | manifestStatus }}
+              </span>
+            </td>
+
+            <!-- Acciones -->
+            <td class="px-6 py-4 relative">
+              <div class="relative inline-block">
+                <button (click)="activeMenu = activeMenu === m.id ? null : m.id; $event.stopPropagation()"
+                  class="px-4 py-2 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg transition-colors">
+                  Opciones
+                </button>
+                @if (activeMenu === m.id) {
+                  <div class="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 z-20 py-1"
+                    (click)="$event.stopPropagation()">
+                    <button (click)="openDetail(m); activeMenu = null"
+                      class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                      Ver detalle
+                    </button>
+                    <button (click)="openDelete(m); activeMenu = null"
+                      class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50">
+                      Eliminar
+                    </button>
+                  </div>
+                }
+              </div>
+            </td>
+
+          </tr>
+        }
+
+        @if (filteredManifests().length === 0) {
+          <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+              <iconify-icon icon="mdi:file-document-outline" class="text-gray-300 text-5xl mb-3 block mx-auto"></iconify-icon>
+              <p class="text-gray-400 font-medium">No se encontraron manifiestos</p>
+              <p class="text-gray-300 text-xs mt-1">Intenta con otros filtros</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+    @if (totalPages > 1) {
+    <div class="flex items-center justify-between mt-4 px-1">
+      <p class="text-sm text-gray-400">
+        Mostrando {{ (currentPage() - 1) * pageSize + 1 }}–{{ showingTo }}
+        de {{ totalItems() }} manifiestos
+      </p>
+      <div class="flex items-center gap-1">
+        <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          <iconify-icon icon="mdi:chevron-left" style="font-size:18px"></iconify-icon>
+        </button>
+        @for (page of pages; track $index) {
+          @if (page === 0) {
+            <span class="w-9 h-9 flex items-center justify-center text-gray-300 text-sm">…</span>
+          } @else {
+            <button (click)="goToPage(page)"
+              class="w-9 h-9 flex items-center justify-center rounded-xl text-sm font-medium transition-colors"
+              [ngClass]="page === currentPage() ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'">
+              {{ page }}
+            </button>
+          }
+        }
+        <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          <iconify-icon icon="mdi:chevron-right" style="font-size:18px"></iconify-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+@if (selectedId()) {
+  <app-manifest-detail-modal [manifestId]="selectedId()!" (close)="closeDetail()" />
+}
+
+@if (deletingId()) {
+  <app-manifest-delete-modal
+    [manifestId]="deletingId()!" [manifestCode]="deletingCode()"
+    (close)="closeDelete()" (deleted)="onDeleted()" />
+}
+
+@if (showForm()) {
+  <app-manifest-form (close)="closeForm()" (created)="closeForm()" />
+}

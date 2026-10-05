@@ -1,0 +1,336 @@
+<div class="w-full flex justify-center">
+  <div class="w-full px-3">
+    <div class="flex flex-col gap-4">
+      <!-- Encabezado -->
+      <div class="bg-terciario shadow rounded-[30px] p-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h5 class="text-2xl font-semibold mb-1 ml-2 text-accent">Campañas de SMS</h5>
+            <div class="flex flex-col w-full gap-3 text-n-slate-11">
+              <p
+                class="mb-0 ml-2 text-sm font-normal line-clamp-5 sm:line-clamp-none max-w-3xl text-gray-600"
+              >
+                Las campañas por SMS te permiten enviar mensajes masivos y
+                personalizados a los ciudadanos de forma rápida y eficiente.
+              </p>
+            </div>
+          </div>
+          <button
+              pButton
+              type="button"
+              (click)="openNew()"
+              class="
+                bg-cuaternario
+                !text-black
+                hover:bg-accent-7
+                hover:!text-white
+                !rounded-full
+                transition-all
+                duration-200
+                flex
+                items-center
+                gap-2
+                px-4
+                py-2
+              ">
+              <iconify-icon
+                icon="mdi:plus-circle-outline"
+                class="text-lg text-inherit"
+              ></iconify-icon>
+
+              <span class="font-medium">
+                Nueva Campaña - SMS
+              </span>
+            </button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <section class="h-[calc(100vh-17rem)] overflow-y-auto rounded-[30px]">
+        <complete-table
+          [cols]="cols"
+          [orderBy]="orderBy"
+          [dataTable]="smsCampanias()"
+          [total]="totalItems"
+          [limit]="limit()"
+          [offset]="offset()"
+          (actionClicked)="onTableAction($event)"
+          (searchChange)="searchChange($event)"
+        />
+      </section>
+
+      <!-- Tabla -->
+      <!-- <section class="w-full mt-0 shadow rounded-xl p-4 bg-terciario">
+        <p-table
+          [value]="smsCampanias()"
+          [rows]="10"
+          [responsiveLayout]="'scroll'"
+          sortMode="multiple"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name">
+                <div class="flex items-center text-xs uppercase gap-4">
+                  Fecha de Creación <p-sortIcon field="name" />
+                </div>
+              </th>
+              <th pSortableColumn="description">
+                <div class="flex items-center text-xs uppercase gap-4">
+                  Nombre <p-sortIcon field="description" />
+                </div>
+              </th>
+              <th pSortableColumn="sender">
+                <div class="flex items-center text-xs uppercase gap-4">
+                  ID del Remitente <p-sortIcon field="sender" />
+                </div>
+              </th>
+              <th pSortableColumn="dateStart">
+                <div
+                  class="flex justify-center items-center text-xs uppercase gap-4"
+                >
+                  Mensaje <p-sortIcon field="dateStart" />
+                </div>
+              </th>
+              <th>
+                <div
+                  class="flex justify-center items-center text-xs uppercase gap-4"
+                >
+                  Estado
+                </div>
+              </th>
+
+              <th class="items-center">
+                <div
+                  class="flex justify-center items-center text-xs uppercase gap-4"
+                ></div>
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td>
+                <p class="text-sm font-light">{{ item.createdAt }}</p>
+              </td>
+              <td>
+                <p class="text-sm font-light">{{ item.name }}</p>
+              </td>
+              <td>
+                <p class="text-sm font-light">
+                  {{ item.sender }}
+                </p>
+              </td>
+              <td class="w-120">
+                <p class="text-sm font-light">
+                  {{ item.message }}
+                </p>
+              </td>
+              <td>
+                <div class="flex justify-center items-center">
+                  <p-tag
+                    [value]="item.estado === true ? ' Finalizado' : 'Activo'"
+                    [severity]="item.estado === true ? 'warn' : 'success'"
+                  />
+                </div>
+              </td>
+
+              <td class="w-28">
+                <div class="flex justify-center items-center gap-1">
+                  <button-progress (click)="count(item)" />
+                  <button-count (click)="downloadReport(item)" />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="100">
+                <div class="text-center text-sm font-light p-4">
+                  No hay campañas de SMS creados.
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #footer>
+            <tr>
+              <td colspan="100">
+                <div class="flex justify-center items-center">
+                  <sat-paginator
+                    [totalItems]="totalItems"
+                    [limit]="limit()"
+                    [offset]="offset()"
+                    [limitOptions]="[10, 25, 50]"
+                    (pageChange)="onPageChange($event)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </section> -->
+    </div>
+  </div>
+</div>
+
+<p-popover #op>
+  <div class="bg-terciario rounded-xl shadow-lg p-6">
+    <h2
+      class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"
+    >
+      <i class="pi pi-envelope text-[#375f95]"></i>
+      Resumen de Envío de Mensajes
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Total -->
+      <div
+        class="p-4 rounded-lg bg-blue-50 text-center border border-blue-100 hover:shadow-md transition-all duration-300"
+      >
+        <p class="text-sm text-gray-600">Total de Mensajes</p>
+        <p class="text-2xl font-bold text-blue-700">
+          {{ response?.totalMessages }}
+        </p>
+      </div>
+
+      <!-- Enviados -->
+      <div
+        class="p-4 rounded-lg bg-green-50 text-center border border-green-100 hover:shadow-md transition-all duration-300"
+      >
+        <p class="text-sm text-gray-600 flex justify-center items-center gap-1">
+          <i class="pi pi-check-circle text-green-600"></i> Enviados
+        </p>
+        <p class="text-2xl font-bold text-green-700">
+          {{ response?.sentCount }}
+        </p>
+        <p class="text-xs text-green-600 mt-1">
+          {{ response?.sentPercentage }}
+        </p>
+      </div>
+
+      <!-- No Enviados -->
+      <div
+        class="p-4 rounded-lg bg-red-50 text-center border border-red-100 hover:shadow-md transition-all duration-300"
+      >
+        <p class="text-sm text-gray-600 flex justify-center items-center gap-1">
+          <i class="pi pi-times-circle text-red-600"></i> No Enviados
+        </p>
+        <p class="text-2xl font-bold text-red-700">
+          {{ response?.notSentCount }}
+        </p>
+        <p class="text-xs text-red-600 mt-1">
+          {{ response?.notSentPercentage }}
+        </p>
+      </div>
+    </div>
+  </div>
+</p-popover>
+
+<p-dialog
+  header="Mensajes Enviados"
+  [(visible)]="visible"
+  [modal]="true"
+  styleClass="modal-6xl"
+>
+  <ng-template #header>
+    <div class="inline-flex items-center justify-center gap-2">
+      <span class="font-bold whitespace-nowrap">Mensajes Enviados</span>
+    </div>
+  </ng-template>
+  <div>
+    <p-table
+      [value]="listPreview"
+      [responsiveLayout]="'scroll'"
+      sortMode="multiple"
+      styleClass="table-header-light "
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="w-30">
+            <div class="flex items-center text-xs uppercase gap-4 text-center">
+              Número de celular
+            </div>
+          </th>
+          <th class="w-150">
+            <div
+              class="flex items-center justify-center text-xs uppercase gap-4"
+            >
+              Mensaje
+            </div>
+          </th>
+          <th class="w-30">
+            <div
+              class="flex items-center justify-center text-xs uppercase gap-4 text-center"
+            >
+              Número de letras
+            </div>
+          </th>
+          <th class="w-30">
+            <div
+              class="flex items-center justify-center text-xs uppercase gap-4 text-center"
+            >
+              Estado
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>
+            <p class="text-sm font-light text-center">{{ item.contact }}</p>
+          </td>
+          <td>
+            <p class="text-sm font-light">{{ item.message }}</p>
+          </td>
+          <td>
+            <p class="text-sm font-light text-center">
+              {{ item.message.length }}
+            </p>
+          </td>
+          <td>
+            <div class="flex justify-center items-center">
+              <p-tag
+                [value]="item.active === 'N' ? ' Pendiente' : 'Enviado'"
+                [severity]="item.active === 'N' ? 'warn' : 'success'"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="100">
+            <div class="text-center text-sm font-light p-4">
+              No existen registros.
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #footer>
+        <tr>
+          <td colspan="100">
+            <div class="flex justify-center items-center">
+              <sat-paginator
+                [totalItems]="totalItems"
+                [limit]="limit()"
+                [offset]="offset()"
+                [limitOptions]="[10, 25, 50, 100]"
+                (pageChange)="onPageChange($event)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <!-- <ng-template #footer>
+    <div>
+      <button-cancel label="Cerrar" [text]="true" (click)="visible = false" />
+    </div>
+  </ng-template> -->
+</p-dialog>
+
+<style>
+  ::ng-deep .p-dialog-content {
+    padding-bottom: 0rem;
+  }
+</style>

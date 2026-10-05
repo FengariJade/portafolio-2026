@@ -1,0 +1,289 @@
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <p-card class="text-center" styleClass="!rounded-[30px] overflow-hidden">
+    <div class="flex items-center justify-center gap-2">
+      <iconify-icon [icon]="'mdi:phone'" class="text-red-600 text-2xl" />
+      <p class="text-xl font-bold">En LLamada</p>
+    </div>
+    <ng-template pTemplate="content">
+      <p class="text-xl font-bold">{{ enLlamada() }}</p>
+    </ng-template>
+  </p-card>
+  <p-card class="text-center" styleClass="!rounded-[30px] overflow-hidden">
+    <div class="flex items-center justify-center gap-2">
+      <iconify-icon
+        [icon]="'mdi:account-check'"
+        class="text-green-600 text-2xl"
+      />
+      <p class="text-xl font-bold">Disponible</p>
+    </div>
+    <ng-template pTemplate="content">
+      <p class="text-xl font-bold">{{ disponible() }}</p>
+    </ng-template>
+  </p-card>
+  <p-card class="text-center" styleClass="!rounded-[30px] overflow-hidden">
+    <div class="flex items-center justify-center gap-2">
+      <iconify-icon [icon]="'mdi:pause'" class="text-yellow-600 text-2xl" />
+      <p class="text-xl font-bold">En Pausa</p>
+    </div>
+    <ng-template pTemplate="content">
+      <p class="text-xl font-bold">{{ pausa() }}</p>
+    </ng-template>
+  </p-card>
+  <p-card class="text-center" styleClass="!rounded-[30px] overflow-hidden">
+    <div class="flex items-center justify-center gap-2">
+      <iconify-icon
+        [icon]="'heroicons-outline:status-offline'"
+        class="text-600 text-2xl"
+      />
+      <p class="text-xl font-bold">Fuera de Línea</p>
+    </div>
+    <ng-template pTemplate="content">
+      <p class="text-xl font-bold">{{ fueraLinea() }}</p>
+    </ng-template>
+  </p-card>
+</div>
+<br />
+<div class=" shadow !rounded-[30px] p-4 mb-4">
+  <div class="flex justify-between flex-wrap gap-4 items-end">
+    <div class="flex items-center gap-x-4 flex-wrap">
+      <div class="flex items-center gap-x-4 pl-5">
+        <iconify-icon [icon]="'mdi:bell'" class="text-xl pb-2" />
+        <span class="whitespace-nowrap pb-2">Configuración de Alertas:</span>
+        <input
+          type="number"
+          pInputText
+          placeholder="Tiempo en minutos"
+          class="
+            w-full
+            !rounded-full
+            !text-sm
+            !h-10
+            min-w-72
+            bg-cuaternario
+            !border
+            !border-transparent
+            focus:!border-[#dad9dd]
+            transition-all
+            duration-200
+            mb-1
+          "
+          [(ngModel)]="minutes"
+          min="1"
+        />
+      </div>
+      <button
+        class="
+        w-auto 
+        bg-cuaternario
+        !text-black
+        hover:bg-accent-7
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2
+        mb-1
+        "
+        (click)="Alert()"
+      >
+        Aplicar
+      </button>
+      <p-toast></p-toast>
+    </div>
+    <div class="flex items-center gap-x-4 flex-wrap">
+      <div class="flex items-center gap-x-4">
+        <span class="whitespace-nowrap">Filtros:</span>
+        <p-select
+          placeholder="Selecciona un Estado"
+          [options]="estadoOptions"
+          optionLabel="name"
+          [(ngModel)]="activeStateFilter"
+          styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+          panelStyleClass="
+              [&_.p-datepicker-header]:bg-cuaternario
+              [&_.p-datepicker-header]:!border-none
+              [&_.p-datepicker-header]:!rounded-[30px]
+
+              bg-cuaternario
+              !rounded-[30px]
+              !border
+              !border-transparent
+              p-1
+
+              [&_.p-datepicker-calendar_td>span]:!rounded-full
+
+              [&_.p-datepicker-calendar_td>span:hover]:!bg-gray-300
+              [&_.p-datepicker-calendar_td>span:hover]:!text-black
+
+              [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border
+              [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border-black
+
+              [&_.p-datepicker-calendar_td.p-highlight>span]:!bg-black
+              [&_.p-datepicker-calendar_td.p-highlight>span]:!text-white
+            "
+          [showClear]="true"
+        ></p-select>
+      </div>
+
+      <div class="flex items-center gap-x-4">
+        <span class="whitespace-nowrap">Buscar:</span>
+        <input
+          type="text"
+          pInputText
+          placeholder="Asesor"
+          class="
+            w-full
+            !rounded-full
+            !text-sm
+            !h-10
+            min-w-72
+            bg-cuaternario
+            !border
+            !border-transparent
+            focus:!border-[#dad9dd]
+            transition-all
+            duration-200
+          "
+          [(ngModel)]="activeSearch"
+        />
+      </div>
+
+      <div class="flex items-center gap-x-4 mr-2">
+        <p-checkbox
+          [binary]="true"
+          styleClass="!rounded-full"
+          [(ngModel)]="activeAlert"
+        ></p-checkbox>
+        <label class="ml-2">Llamadas en Alerta</label>
+      </div>
+    </div>
+  </div>
+</div>
+<section class="w-full mt-0 shadow !rounded-[30px] p-4">
+  <p-table
+    [value]="filteredItems"
+    [responsiveLayout]="'scroll'"
+    sortMode="multiple"
+    styleClass="table-header-light "
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="user.name">
+          Asesor <p-sortIcon field="user.name" />
+        </th>
+        <th pSortableColumn="phoneLogin">
+          <div class="flex items-center justify-center">
+            Extensión/teléfono <p-sortIcon field="phoneLogin" />
+          </div>
+        </th>
+        <th pSortableColumn="channelState.name">
+          <div class="flex items-center justify-center">
+            Estado <p-sortIcon field="channelState?.name" />
+          </div>
+        </th>
+        <th pSortableColumn="duration">
+          <div class="flex items-center justify-center">
+            Tiempo de estado <p-sortIcon field="duration" />
+          </div>
+        </th>
+        <th pSortableColumn="phoneNumber">
+          <div class="flex items-center justify-center">
+            Teléfono <p-sortIcon field="phoneNumber" />
+          </div>
+        </th>
+        <th pSortableColumn="lastCall.updatedAt">
+          <div class="flex items-center justify-center">
+            Última llamada <p-sortIcon field="lastCall.updatedAt" />
+          </div>
+        </th>
+        <!-- <th pSortableColumn="lastCall?.callsToday">
+          <div class="flex items-center justify-center">
+            Llamadas hoy <p-sortIcon field="lastCall?.callsToday" />
+          </div>
+        </th> -->
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td>
+          <div class="text-sm">
+            {{ item.user?.name }}
+          </div>
+        </td>
+        <td>
+          <div class="text-sm text-center">
+            {{ item.phoneLogin }}
+          </div>
+        </td>
+        <td>
+          <div
+            [ngClass]="[
+              'flex justify-center items-center gap-2 text-sm text-center',
+              item.state.textColor
+            ]"
+          >
+            <iconify-icon [icon]="item.state.icon" class="text-2xl" />
+            <span>{{ item.state.label }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center justify-center text-sm">
+            {{ item.isOffline ? "-" : (item.updatedAt | timeElapsed) }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center justify-center text-sm">
+            {{ !item.inCall ? "-" : item.phoneNumber }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center justify-center text-sm">
+            {{
+              item.lastCall
+                ? (item.lastCall?.updatedAt | date : "hh:mm:ss .a")
+                : "--:--"
+            }}
+          </div>
+        </td>
+        <!-- <td>
+          <div class="flex items-center justify-center text-sm">
+            {{ item.lastCall?.callsToday ?? "0" }}
+          </div>
+        </td> -->
+        <td class="w-28">
+          <button-split [options]="menuItems" [context]="item"></button-split>
+          @if (itemListen!=null) {
+          <app-escucha-vivo
+            [(visible)]="showListen"
+            [item]="itemListen"
+          ></app-escucha-vivo>
+          } @if (itemInterrupt!=null) {
+          <app-intervenir-llamada
+            [(visible)]="showInterupt"
+            [item]="itemInterrupt"
+          ></app-intervenir-llamada>
+          } @if (itemControl!=null) {
+          <app-control-grabacion
+            [(visible)]="showControl"
+            [item]="itemControl"
+          ></app-control-grabacion>
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="100">
+          <div class="text-center text-sm font-light p-4">
+            No se encontraron Asesores.
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

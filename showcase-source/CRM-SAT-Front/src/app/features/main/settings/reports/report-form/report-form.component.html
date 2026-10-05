@@ -1,0 +1,119 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">
+        Dashboard ID <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="number"
+        formControlName="dashboardId"
+        placeholder="Ej: 45"
+        class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">
+        Nombre del reporte <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        formControlName="name"
+        placeholder="Ej: Ventas Diarias"
+        class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium text-gray-700">Descripción</label>
+    <textarea
+      pTextarea
+      rows="3"
+      formControlName="description"
+      placeholder="Describe brevemente el propósito de este dashboard..."
+      class="
+                w-full
+
+                !rounded-[20px]
+                !text-sm
+
+                bg-cuaternario
+                !border
+                !border-transparent
+
+                px-4
+                py-2
+
+                focus:!border-[#dad9dd]
+                focus:outline-none
+
+                transition-all
+                duration-200
+
+                resize-none
+              "
+    ></textarea>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium text-gray-700">
+      Tipo de reporte
+    </label>
+
+    <!-- Campo solo lectura que se ve bonito -->
+    <div class="w-full">
+      <input
+        type="text"
+        readonly
+        disabled
+        value="Metabase"
+        class="
+          !bg-[#000]
+          !text-white
+          !rounded-full
+          flex
+          items-center
+          gap-2
+          px-4
+          py-2"
+      />
+    </div>
+
+    <!-- Campo oculto para que el formulario siga enviando el valor -->
+    <input type="hidden" formControlName="type" />
+  </div>
+
+  <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
+    <button-cancel (click)="onCancel()" label="Cancelar" />
+    <button-save
+      [label]="data?.report ? 'Guardar Cambios' : 'Crear Reporte'"
+      [disabled]="form.invalid"
+      (click)="onSubmit()"
+    />
+  </div>
+</form>

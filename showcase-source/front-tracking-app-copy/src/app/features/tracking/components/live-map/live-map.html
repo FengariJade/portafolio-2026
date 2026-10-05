@@ -1,0 +1,173 @@
+<div class="h-full flex flex-col p-8 pt-22 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm h-full flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+        <iconify-icon icon="mdi:map-marker-path" class="text-violet-600 text-xl"></iconify-icon>
+        <h3 class="text-base font-semibold text-gray-800">
+            {{ isGlobalMode ? 'Mapa de flota en tiempo real' : 'Mapa de ruta' }}
+        </h3>
+        </div>
+        @if (isGlobalMode) {
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <iconify-icon icon="mdi:truck" class="text-blue-500"></iconify-icon>
+            <span>{{ activeTrucks.length }} camiones activos</span>
+        </div>
+        } @else {
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <iconify-icon icon="mdi:map-marker" class="text-blue-500"></iconify-icon>
+            <span>{{ delivery()?.currentLocation }}</span>
+        </div>
+        }
+    </div>
+
+    <div class="flex flex-1 min-h-0">
+
+        <!-- Mapa SVG -->
+        <div class="flex-1 relative bg-sky-50 p-4">
+        <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- Silueta de Perú -->
+            <path d="M18,15 L22,12 L28,13 L32,18 L35,22 L30,28 L28,35 L25,42 L22,50
+                    L20,58 L22,65 L28,70 L35,75 L42,78 L48,80 L52,78 L58,72 L62,65
+                    L65,58 L68,52 L72,48 L75,42 L72,35 L68,28 L62,22 L55,18 L48,15
+                    L42,13 L35,12 L28,12 Z"
+            fill="#e0f2fe" stroke="#bae6fd" stroke-width="0.5"/>
+
+            <!-- Región amazónica -->
+            <path d="M48,15 L55,18 L62,22 L68,28 L72,35 L75,42 L72,48 L68,52 L62,55
+                    L58,52 L55,48 L52,42 L50,35 L48,28 L45,22 Z"
+            fill="#dcfce7" stroke="#bbf7d0" stroke-width="0.3"/>
+
+            <!-- MODO SINGLE: ruta de una entrega -->
+            @if (!isGlobalMode && delivery()) {
+            <line
+                [attr.x1]="originPos.x" [attr.y1]="originPos.y"
+                [attr.x2]="destPos.x"   [attr.y2]="destPos.y"
+                stroke="#a78bfa" stroke-width="0.8" stroke-dasharray="2,1.5" opacity="0.7"/>
+
+            <circle [attr.cx]="originPos.x" [attr.cy]="originPos.y" r="2"
+                fill="white" stroke="#7c3aed" stroke-width="0.8"/>
+            <circle [attr.cx]="originPos.x" [attr.cy]="originPos.y" r="1"
+                fill="#7c3aed"/>
+
+            <circle [attr.cx]="destPos.x" [attr.cy]="destPos.y" r="2.5"
+                fill="white" stroke="#7c3aed" stroke-width="0.8"/>
+
+            <circle [attr.cx]="currentPos.x" [attr.cy]="currentPos.y" r="3.5"
+                [attr.fill]="statusColor[delivery()!.status]" opacity="0.2"/>
+            <circle [attr.cx]="currentPos.x" [attr.cy]="currentPos.y" r="2"
+                [attr.fill]="statusColor[delivery()!.status]"/>
+
+            <text [attr.x]="originPos.x + 2" [attr.y]="originPos.y - 3"
+                font-size="2.5" fill="#6b7280">{{ delivery()?.origin }}</text>
+            <text [attr.x]="destPos.x + 2" [attr.y]="destPos.y - 3"
+                font-size="2.5" fill="#6b7280">{{ delivery()?.destination }}</text>
+
+            @if (isCurrentDifferent) {
+                <text [attr.x]="currentPos.x + 2" [attr.y]="currentPos.y - 3"
+                font-size="2" fill="#9ca3af">{{ currentCity }}</text>
+            }
+            }
+
+            <!-- MODO GLOBAL: todos los camiones -->
+            @if (isGlobalMode) {
+            @for (truck of activeTrucks; track truck.id) {
+                <circle
+                [attr.cx]="getTruckPos(truck.city).x"
+                [attr.cy]="getTruckPos(truck.city).y"
+                r="4"
+                [attr.fill]="truckStatusColor[truck.status]"
+                opacity="0.15"/>
+                <circle
+                [attr.cx]="getTruckPos(truck.city).x"
+                [attr.cy]="getTruckPos(truck.city).y"
+                r="2.2"
+                [attr.fill]="truckStatusColor[truck.status]"
+                class="cursor-pointer"
+                (click)="selectTruck(truck.id)"/>
+                <text
+                [attr.x]="getTruckPos(truck.city).x + 3"
+                [attr.y]="getTruckPos(truck.city).y - 3"
+                font-size="2.2" fill="#374151" font-weight="600">
+                {{ truck.plate }}
+                </text>
+                <text
+                [attr.x]="getTruckPos(truck.city).x + 3"
+                [attr.y]="getTruckPos(truck.city).y + 1"
+                font-size="1.8" fill="#9ca3af">
+                {{ truck.city }}
+                </text>
+            }
+            }
+
+        </svg>
+
+        <!-- Leyenda -->
+        <div class="absolute bottom-6 left-6 bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 flex flex-col gap-2">
+            @if (isGlobalMode) {
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span class="text-xs text-gray-500">En tránsito</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <span class="text-xs text-gray-500">Disponible</span>
+            </div>
+            } @else {
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-violet-600"></div>
+                <span class="text-xs text-gray-500">Origen / Destino</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full"
+                [style.background]="statusColor[delivery()?.status ?? 'pending']"></div>
+                <span class="text-xs text-gray-500">Ubicación actual</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-6 border-t-2 border-dashed border-violet-400"></div>
+                <span class="text-xs text-gray-500">Ruta</span>
+            </div>
+            }
+        </div>
+        </div>
+
+        <!-- Panel lateral en modo global -->
+        @if (isGlobalMode) {
+        <div class="w-72 shrink-0 border-l border-gray-100 flex flex-col">
+            <div class="px-5 py-4 border-b border-gray-100">
+            <h4 class="text-sm font-semibold text-gray-800">Camiones en ruta</h4>
+            </div>
+            <div class="flex-1 overflow-y-auto divide-y divide-gray-50">
+            @for (truck of activeTrucks; track truck.id) {
+                <div
+                class="px-5 py-4 cursor-pointer transition-colors"
+                [class]="selectedTruck === truck.id ? 'bg-violet-50' : 'hover:bg-gray-50'"
+                (click)="selectTruck(truck.id)">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-mono text-sm font-bold text-gray-800">{{ truck.plate }}</span>
+                    <span class="w-2 h-2 rounded-full"
+                    [class]="truck.status === 'in_transit' ? 'bg-blue-500' : 'bg-green-500'">
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500">{{ truck.driver }}</p>
+                <div class="flex items-center justify-between mt-2">
+                    <div class="flex items-center gap-1 text-xs text-gray-400">
+                    <iconify-icon icon="mdi:map-marker" class="text-sm"></iconify-icon>
+                    {{ truck.city }}
+                    </div>
+                    <div class="flex items-center gap-1 text-xs text-gray-400">
+                    <iconify-icon icon="mdi:package-variant" class="text-sm"></iconify-icon>
+                    {{ truck.deliveries }} entregas
+                    </div>
+                </div>
+                </div>
+            }
+            </div>
+        </div>
+        }
+
+    </div>
+    </div>
+</div>

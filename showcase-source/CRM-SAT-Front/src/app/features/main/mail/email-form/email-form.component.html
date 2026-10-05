@@ -1,0 +1,200 @@
+<div class="grid grid-cols-1 gap-2">
+  <form [formGroup]="formData">
+    <div class="grid grid-cols-1 gap-4">
+      <div class="grid grid-cols-1 gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-16">
+            <label class="text-sm"> Para </label>
+          </div>
+          <div class="flex-1">
+            <p-autocomplete
+              formControlName="to"
+              [suggestions]="emailItemsTo"
+              (completeMethod)="searchEmailTo($event)"
+              optionLabel="email"
+              optionValue="email"
+              class="w-full"
+              styleClass="w-full"
+              inputStyleClass="w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200"
+              [showClear]="true"
+            >
+              <ng-template let-item #item>
+                <div class="grid grid-cols-1">
+                  <p class="text-sm">{{ item.name }}</p>
+                  <p class="text-xs">{{ item.email }}</p>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-16">
+            <label class="text-sm"> Asunto </label>
+          </div>
+          <div class="flex-1">
+            <input
+              pInputText
+              class="w-full"
+              formControlName="subject"
+              class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+            />
+          </div>
+        </div>
+        <mail-editor formControlName="content" />
+      </div>
+      <div class="flex justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <div class="relative flex">
+            <button
+              type="button"
+              (click)="onSubmit()"
+              [disabled]="formData.invalid"
+              class="
+                bg-cuaternario
+                !text-black
+                hover:bg-accent-7
+                hover:!text-white
+                !rounded-tl-full
+                !rounded-bl-full
+                transition-all
+                duration-200
+                flex
+                items-center
+                gap-2
+                px-4
+                py-2"
+            >
+              Enviar
+            </button>
+
+            <button
+              type="button"
+              class="
+                bg-cuaternario
+                !text-black
+                hover:bg-accent-7
+                hover:!text-white
+                !rounded-tr-full
+                !rounded-br-full
+                transition-all
+                duration-200
+                flex
+                items-center
+                gap-2
+                px-4
+                py-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path fill="currentColor" d="M7 10l5 5l5-5z" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <div class="flex items-center justify-center">
+              <btn-custom
+                icon="tabler:message"
+                severity="secondary"
+                tooltip="Insertar respuesta rapida"
+                (click)="selectResponse($event)"
+                
+              />
+
+              <p-popover #responses>
+                <div class="flex flex-col gap-4 p-3">
+                  <div>
+                    <span class="font-medium block mb-2"
+                      >Respuestas predefinidas
+                    </span>
+                    <ul class="list-none p-0 m-0 flex flex-col">
+                      <li
+                        *ngFor="let response of predefinedResponseList"
+                        class="flex items-center gap-2 px-2 py-3 hover:bg-emphasis cursor-pointer rounded-border hover:bg-sky-100"
+                        (click)="insertResponse(response)"
+                      >
+                        <div class="flex flex-col gap-2">
+                          <p class="font-medium">
+                            {{ response.title }}
+                          </p>
+                          <app-mail-viewer
+                            [safeMailHtml]="getSafeContent(response.content)"
+                          />
+                        </div>
+                      </li>
+                      @if (predefinedResponseList.length == 0) {
+                      <li
+                        class="flex items-center gap-2 px-2 py-3 text-center font-extralight italic text-xs"
+                      >
+                        Sin respuestas...
+                      </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </p-popover>
+            </div>
+
+            <div class="flex items-center">
+              <input
+                type="file"
+                #fileInput
+                style="display: none"
+                (change)="onFileSelected($event)"
+              />
+              <btn-custom
+                icon="mdi:paperclip"
+                severity="secondary"
+                tooltip="Adjuntar archivos"
+                (click)="attachFile()"
+              />
+            </div>
+
+            <div class="flex items-center gap-2 text-gray-500">
+              <btn-custom
+                icon="quill:signature"
+                severity="secondary"
+                tooltip="Insertar firma"
+                (click)="insertSignature()"
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <btn-custom
+            icon="lucide:trash-2"
+            severity="secondary"
+            tooltip="Descartar borrador"
+            (click)="onCancel()"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,73 @@
+<div class="grid grid-cols-1 gap-4">
+  <div>
+    <p-datepicker
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      inputId="startDate"
+      [(ngModel)]="dateSelected"
+      placeholder="Seleccione el día..."
+      styleClass="
+        [&_.p-inputtext]:!rounded-full 
+        [&_.p-inputtext]:!w-full
+        [&_.p-inputtext]:focus:ring-gray-300 
+        [&_.p-inputtext]:bg-cuaternario
+      "
+      panelStyleClass="
+        [&_.p-datepicker-header]:bg-cuaternario
+        [&_.p-datepicker-header]:!border-none
+        [&_.p-datepicker-header]:!rounded-t-[30px]
+
+        bg-cuaternario
+        !rounded-[30px]
+        !border
+        !border-transparent
+        p-3
+
+        [&_.p-datepicker-calendar_td>span]:!rounded-full
+
+        [&_.p-datepicker-calendar_td>span:hover]:!bg-gray-300
+        [&_.p-datepicker-calendar_td>span:hover]:!text-black
+
+        [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border
+        [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border-black
+
+        [&_.p-datepicker-calendar_td.p-highlight>span]:!bg-black
+        [&_.p-datepicker-calendar_td.p-highlight>span]:!text-white
+      "
+      inputStyleClass="!rounded-full !w-full"
+      class="!rounded-full !w-full"
+      (ngModelChange)="changeDate($event)"
+      appendTo="body"
+    />
+  </div>
+  <div>
+    <p-select
+      [options]="portfolioList()"
+      [(ngModel)]="portfolioId"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="Seleccione la cartera..."
+      styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+      appendTo="body"
+      [filter]="true"
+    ></p-select>
+  </div>
+  <div class="flex justify-end gap-2">
+    <btn-custom
+      label="Cancelar"
+      severity="danger"
+      icon="ooui:cancel"
+      [text]="false"
+      (click)="onCancel()"
+    />
+
+    <btn-custom
+      [disabled]="invalid"
+      label="Confirmar"
+      severity="primary"
+      icon="mingcute:check-2-fill"
+      [text]="false"
+      (click)="onSubmit()"
+    />
+  </div>
+</div>

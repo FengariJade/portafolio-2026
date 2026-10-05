@@ -1,0 +1,83 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+    (click)="close.emit()">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
+      (click)="$event.stopPropagation()">
+
+      <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 shrink-0">
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">Editar Usuario</h3>
+          <p class="text-sm text-gray-400 mt-0.5">Modifica los datos del usuario</p>
+        </div>
+        <button (click)="close.emit()"
+          class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 text-xl">✕</button>
+      </div>
+
+      <div class="overflow-y-auto flex-1 px-8 py-6 flex flex-col gap-4">
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1.5">Nombre <span class="text-red-400">*</span></label>
+            <input [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50" />
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1.5">Apellido</label>
+            <input [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1.5">Teléfono</label>
+            <input [ngModel]="form().phone" (ngModelChange)="set('phone', $event)"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50" />
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1.5">Cargo</label>
+            <input [ngModel]="form().position" (ngModelChange)="set('position', $event)"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50" />
+          </div>
+        </div>
+
+
+        @if (userRole() === 'OPERATOR') {
+            <div>
+                <label class="text-sm font-medium text-gray-700 block mb-1.5">
+                Almacén
+                <span class="text-gray-400 font-normal">(requerido para operadores)</span>
+                </label>
+                <select [ngModel]="form().warehouseId" (ngModelChange)="set('warehouseId', $event)"
+                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 text-gray-600">
+                <option value="">Selecciona un almacén</option>
+                @for (w of warehouses(); track w.id) {
+                    <option [value]="w.id">{{ w.name }} — {{ w.code }}</option>
+                }
+                </select>
+            </div>
+            }
+
+      </div>
+
+      @if (error()) {
+        <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg mx-8 mb-2">
+          <span>⚠️</span><span>{{ error() }}</span>
+        </div>
+      }
+
+      <div class="px-8 py-5 border-t border-gray-100 flex justify-between shrink-0 bg-white">
+        <button (click)="close.emit()"
+          class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+          Cancelar
+        </button>
+        <button (click)="submit()" [disabled]="loading()"
+          class="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all disabled:opacity-50"
+          [ngClass]="loading() ? 'bg-violet-400' : 'bg-violet-600 hover:bg-violet-700'">
+          {{ loading() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

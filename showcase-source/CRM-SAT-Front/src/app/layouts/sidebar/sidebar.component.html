@@ -1,0 +1,16 @@
+<div
+  [@slideInOut]="sidebarState"
+  (mouseenter)="onHover(true)"
+  (mouseleave)="onHover(false)"
+  class="h-full flex flex-col overflow-hidden bg-primario
+         fixed left-0 top-0 bottom-0 z-40"
+>
+  <div class="h-full flex flex-col">
+    <div class="flex-1 overflow-auto custom-scrollbar pt-40 px-1">
+      <sidebar-menu
+        [items]="listOpciones"
+        [expanded]="isExpanded"
+      />
+    </div>
+  </div>
+</div>

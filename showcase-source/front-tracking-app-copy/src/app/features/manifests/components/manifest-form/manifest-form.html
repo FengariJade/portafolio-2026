@@ -1,0 +1,172 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+  (click)="close.emit()">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+          <iconify-icon icon="mdi:file-document-plus-outline" class="text-violet-600" style="font-size:20px"></iconify-icon>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-800">Crear Manifiesto</h3>
+          <p class="text-xs text-gray-400">Se iniciará en estado <span class="text-violet-600 font-semibold">DRAFT</span></p>
+        </div>
+      </div>
+      <button (click)="close.emit()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+        <iconify-icon icon="mdi:close" class="text-gray-500"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 px-8 py-6" [formGroup]="form">
+
+      @if (error()) {
+        <div class="mb-5 px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{{ error() }}</div>
+      }
+
+      <!-- Asignación -->
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Asignación</p>
+      <div class="grid grid-cols-2 gap-4 mb-6">
+
+        <!-- Código de manifiesto -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">
+            Código de manifiesto <span class="text-red-500">*</span>
+          </label>
+          <input formControlName="manifestCode" type="text" 
+            placeholder="MAN-20260303-001"
+            class="w-full px-4 py-2.5 border rounded-xl text-sm font-mono outline-none transition-all"
+            [class]="isInvalid(form,'manifestCode') ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:ring-2 focus:ring-violet-200 focus:border-violet-400'" />
+          @if (isInvalid(form,'manifestCode')) {
+            <p class="text-xs text-red-500 mt-1">El código es obligatorio y máximo 50 caracteres</p>
+          }
+        </div>
+
+        <!-- Ruta -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Ruta <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select formControlName="routeId"
+              class="w-full appearance-none px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 cursor-pointer"
+              [class]="isInvalid(form,'routeId') ? 'border-red-300 bg-red-50' : 'border-gray-200'">
+              <option value="">Selecciona una ruta</option>
+              @for (r of routes(); track r.id) {
+                <option [value]="r.id">{{ r.name }} ({{ r.code }})</option>
+              }
+            </select>
+            <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+          </div>
+          @if (isInvalid(form,'routeId')) { <p class="text-xs text-red-500 mt-1">Selecciona una ruta</p> }
+        </div>
+
+        <!-- Camión -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Camión <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select formControlName="truckId"
+              class="w-full appearance-none px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 cursor-pointer"
+              [class]="isInvalid(form,'truckId') ? 'border-red-300 bg-red-50' : 'border-gray-200'">
+              <option value="">Selecciona un camión</option>
+              @for (t of trucks(); track t.id) {
+                <option [value]="t.id">{{ t.licensePlate }} — {{ t.brand }} {{ t.model }}</option>
+              }
+            </select>
+            <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+          </div>
+          @if (isInvalid(form,'truckId')) { <p class="text-xs text-red-500 mt-1">Selecciona un camión</p> }
+        </div>
+
+        <!-- Chofer -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Chofer <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select formControlName="driverId"
+              class="w-full appearance-none px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 cursor-pointer"
+              [class]="isInvalid(form,'driverId') ? 'border-red-300 bg-red-50' : 'border-gray-200'">
+              <option value="">Selecciona un chofer</option>
+              @for (d of drivers(); track d.id) {
+                <option [value]="d.id">{{ d.firstName }} {{ d.lastName }}</option>
+              }
+            </select>
+            <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+          </div>
+          @if (isInvalid(form,'driverId')) { <p class="text-xs text-red-500 mt-1">Selecciona un chofer</p> }
+        </div>
+
+        <!-- Origen -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Almacén origen <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select formControlName="originWarehouseId"
+              class="w-full appearance-none px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 cursor-pointer"
+              [class]="isInvalid(form,'originWarehouseId') ? 'border-red-300 bg-red-50' : 'border-gray-200'">
+              <option value="">Selecciona almacén</option>
+              @for (w of warehouses(); track w.id) {
+                <option [value]="w.id">{{ w.name }} — {{ w.city }}</option>
+              }
+            </select>
+            <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+          </div>
+          @if (isInvalid(form,'originWarehouseId')) { <p class="text-xs text-red-500 mt-1">Selecciona el origen</p> }
+        </div>
+
+        <!-- Destino -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Almacén destino <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select formControlName="destinationWarehouseId"
+              class="w-full appearance-none px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 cursor-pointer"
+              [class]="isInvalid(form,'destinationWarehouseId') ? 'border-red-300 bg-red-50' : 'border-gray-200'">
+              <option value="">Selecciona almacén</option>
+              @for (w of warehouses(); track w.id) {
+                <option [value]="w.id">{{ w.name }} — {{ w.city }}</option>
+              }
+            </select>
+            <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+          </div>
+          @if (isInvalid(form,'destinationWarehouseId')) { <p class="text-xs text-red-500 mt-1">Selecciona el destino</p> }
+        </div>
+
+      </div>
+
+      <!-- Programación -->
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Programación</p>
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Salida programada</label>
+          <input formControlName="scheduledDepartureAt" type="datetime-local"
+            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Llegada programada</label>
+          <input formControlName="scheduledArrivalAt" type="datetime-local"
+            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">N° Precinto</label>
+          <input formControlName="sealNumber" type="text" placeholder="SEAL-001"
+            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400" />
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Observaciones</p>
+      <textarea formControlName="notes" rows="2" placeholder="Notas internas del despacho..."
+        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 resize-none"></textarea>
+
+    </div>
+
+    <div class="flex items-center justify-end gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50">
+      <button (click)="close.emit()"
+        class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+        Cancelar
+      </button>
+      <button (click)="submit()" [disabled]="loading()"
+        class="px-6 py-2.5 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 rounded-xl flex items-center gap-2">
+        @if (loading()) { <iconify-icon icon="mdi:loading" class="animate-spin" style="font-size:16px"></iconify-icon> }
+        Crear manifiesto
+      </button>
+    </div>
+  </div>
+</div>

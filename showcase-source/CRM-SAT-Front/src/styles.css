@@ -1,0 +1,916 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100..900;1,100..900&display=swap");
+
+@import "tailwindcss";
+
+@import "quill/dist/quill.snow.css";
+
+@custom-variant dark (&:where(.app-dark, .app-dark *));
+
+/* quitar aplyy colors o modificar constantes (es mejor ahcerlo parae vitar conflictos)*/
+/* Aplicar en configuración en botones (componentes)  */
+
+:root {
+  /* SISTEMA VIEJO (fallback seguro) */
+  --sat-principal: #F7F6FB;
+  --sat-principalHover: #0f2d51;
+  --sat-background: #E6EAF3;
+  --sat-background2: #F7F6FB;
+  --sat-text: #000000;
+  --sat-white: #000000;
+  --sat-error: #eb4038;
+  --sat-textInteractive: #303880;
+  --sat-contentCard: #c0f0fe;
+
+  /* SISTEMA NUEVO */
+  --sat-Primario: #F7F6FB;
+  --sat-Secundario: #E6EAF3;
+  --sat-Terciario: #FFFFFF;
+  --sat-Cuaternario: #ECEBF0;
+  --sat-Accent: #9993F5;
+  --sat-Accent2: #EDFC93;
+  --sat-Accent3: #96D6D5;
+  --sat-Accent4: #CBE1D5;
+  --sat-Accent5: #2A57E6;
+  --sat-Accent6: #EBD3D1;
+  --sat-Accent7: #000000;
+}
+
+:root[data-theme='dark'] {
+  --sat-Primario: #121212;
+  --sat-Secundario: #1E1E1E;
+  --sat-Terciario: #242424;
+  --sat-Cuaternario: #2E2E2E;
+
+  --sat-text: #FFFFFF;
+}
+
+
+* {
+  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+sidebar-button a:hover,
+sidebar-button a:hover p,
+sidebar-button a:hover iconify-icon {
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+/* Scrollbar para navegadores basados en WebKit (Chrome, Edge, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px; /* más grueso */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: white; /* color del scroll */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #2b4e81; /* azul oscuro al pasar el mouse */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: #1e3a66; /* azul aún más oscuro al hacer clic */
+}
+
+.sidebar-animating {
+  will-change: transform;
+  transform: translateZ(0);
+  border-right: none;
+}
+
+.sidebar-animating {
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+}
+
+.custom-scrollbar:hover {
+  scrollbar-color: #2b4e81 transparent;
+}
+
+::ng-deep .p-colorpicker {
+  width: 100% !important;
+}
+
+.p-colorpicker-preview {
+  width: 100% !important;
+  height: auto !important;
+  padding: 7px !important;
+}
+
+.emoji-mart-search input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  margin-bottom: 8px;
+}
+
+.p-dialog-header {
+  @apply !px-6 !py-3;
+}
+
+::ng-deep .p-tag-success {
+  background-color: #4caf50;
+}
+
+::ng-deep .p-tag-warning {
+  background-color: #ffc107;
+}
+
+::ng-deep .p-tag-danger {
+  background-color: #f44336;
+}
+
+.bg-primary {
+  background-color: var(--sat-principal);
+  color: var(--sat-text);
+}
+
+.sat-background {
+  background-color: var(--sat-background);
+}
+
+.sat-background2 {
+  background-color: var(--sat-background2);
+}
+
+.bg-contentCard {
+  background-color: var(--sat-contentCard);
+}
+
+.text-white {
+  color: var(--sat-white);
+}
+
+.drop-zone {
+  border: 1px dashed #616161;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  color: #007bff;
+  background-color: #f9f9f9;
+}
+
+.p-datatable-thead > tr > th,
+.p-datatable-tbody > tr > td {
+  @apply !px-4 !py-2;
+}
+
+.p-datatable-tbody > tr > td {
+  background-color: var(--sat-background2) !important;
+}
+
+.p-datatable-thead > tr > th {
+  border: 1px solid #cdf0ff !important;
+  background-color: var(--sat-contentCard) !important;
+  color: var(--sat-principal) !important;
+  @apply !font-semibold text-sm;
+}
+
+.p-datatable-thead > tr:first-child > th:first-child {
+  @apply rounded-tl-lg;
+}
+
+.p-datatable-thead > tr:first-child > th:last-child {
+  @apply rounded-tr-lg;
+}
+
+.p-popover-content {
+  @apply !p-0;
+}
+
+.modal-xs,
+.modal-sm,
+.modal-md,
+.modal-lg,
+.modal-xl,
+.modal-2xl,
+.modal-3xl,
+.modal-4xl,
+.modal-5xl,
+.modal-6xl,
+.modal-7xl,
+.modal-8xl,
+.modal-9xl,
+.modal-10xl,
+.modal-11xl,
+.modal-12xl {
+  @apply w-[95%];
+}
+
+@media (min-width: 20rem) {
+  .modal-xs {
+    @apply w-[18rem];
+  }
+}
+
+@media (min-width: 24rem) {
+  .modal-sm {
+    max-width: 22rem;
+  }
+}
+
+@media (min-width: 38rem) {
+  .modal-md {
+    max-width: 26rem;
+  }
+}
+
+@media (min-width: 32rem) {
+  .modal-lg {
+    width: 30rem;
+  }
+}
+
+@media (min-width: 36rem) {
+  .modal-xl {
+    max-width: 34rem;
+  }
+}
+
+@media (min-width: 42rem) {
+  .modal-2xl {
+    max-width: 40rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .modal-3xl {
+    max-width: 46rem;
+  }
+}
+
+@media (min-width: 56rem) {
+  .modal-4xl {
+    max-width: 54rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .modal-5xl {
+    max-width: 62rem;
+  }
+}
+
+@media (min-width: 72rem) {
+  .modal-6xl {
+    max-width: 70rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .modal-7xl {
+    max-width: 78rem;
+  }
+}
+
+@media (min-width: 88rem) {
+  .modal-8xl {
+    max-width: 86rem;
+  }
+}
+
+@media (min-width: 96rem) {
+  .modal-9xl {
+    max-width: 94rem;
+  }
+}
+
+@media (min-width: 104rem) {
+  .modal-10xl {
+    max-width: 102rem;
+  }
+}
+
+@media (min-width: 112rem) {
+  .modal-11xl {
+    max-width: 110rem;
+  }
+}
+
+@media (min-width: 120rem) {
+  .modal-12xl {
+    max-width: 118rem;
+  }
+}
+
+.p-datatable-thead {
+  @apply !py-2;
+}
+
+.p-datatable-thead > tr > th {
+  @apply !py-2;
+}
+
+.p-datatable-tfoot > tr > td {
+  @apply !border-b-0 !py-2;
+}
+
+.p-dialog-header {
+  @apply !px-5 !py-2 border-b border-slate-300 mb-4;
+}
+
+.p-dialog-title {
+  @apply !text-lg !font-medium;
+}
+
+.p-dialog-header-actions .p-button {
+  @apply !w-8 !h-8 rounded-none;
+}
+
+/*ELIMINAR DISEÑO EMOJI*/
+
+.emoji-mart-anchors {
+  display: none !important;
+}
+
+#emoji-mart-search-2 {
+  padding: 6px !important;
+  margin: 10px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 10px !important;
+  width: 94% !important;
+}
+
+.emoji-mart-sr-only {
+  display: none !important;
+}
+
+.emoji-mart-search-icon {
+  display: none !important;
+}
+
+.estado-tag {
+  padding: 1px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+  transition: all 0.3s ease-in-out;
+  /* animation: pulse 1.5s infinite; */
+}
+
+.activo {
+  background-color: #d1f7d6;
+  color: #2e7d32;
+}
+
+.finalizado {
+  background-color: #fff4cd;
+  color: #c49000;
+}
+
+::ng-deep .p-calendar {
+  width: 100% !important;
+}
+
+::ng-deep .p-inputtext {
+  width: 100% !important;
+}
+
+.p-datepicker {
+  width: 100% !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.p-tab {
+  @apply !py-2;
+}
+
+::ng-deep .padding-card-modified .p-card-body {
+  padding: 8px !important;
+  background-color: var(--sat-Terciario) !important;
+}
+
+::ng-deep .no-padding-card .p-card-body {
+  padding: 0px !important;
+  background-color: var(--sat-Terciario) !important;
+}
+
+::ng-deep .chat-card-container .p-card {
+  border-radius: unset !important;
+  background-color: var(--sat-Cuaternario) !important;
+}
+
+::ng-deep .p-divider-horizontal {
+  padding: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.my-element {
+  --tw-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Scrollbar general */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track del scrollbar (el fondo) */
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: var(--sat-principal) !important;
+  border-radius: 2px;
+}
+
+/* Thumb del scrollbar (la parte que se arrastra) */
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--sat-principalHover) !important;
+  border-radius: 2px;
+}
+
+/* Hover del thumb */
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--sat-textInteractive) !important;
+}
+
+.p-breadcrumb {
+  @apply !py-2 !rounded-lg !text-sm !bg-[var(--sat-principal)];
+}
+
+.p-breadcrumb-separator svg {
+  @apply !w-3;
+}
+
+@layer utilities {
+  .animate-marquee {
+    animation: marquee 15s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+.p-editor .p-editor-toolbar,
+.p-editor .p-editor-content .ql-editor {
+  @apply bg-white;
+}
+
+.p-select .p-select-dropdown {
+  @apply w-8 h-6 !my-2 rounded-full;
+}
+
+.p-select .p-select-label {
+  @apply !pr-0;
+}
+
+.p-select .p-select-dropdown svg {
+  @apply !w-3;
+}
+
+.p-datatable-tbody > tr > td {
+  @apply !py-2;
+}
+
+.table-y-lg .p-datatable-tbody > tr > td {
+  @apply !py-2;
+}
+
+.table-x-sm .p-datatable-tbody > tr > td {
+  @apply !px-2;
+}
+
+.p-datatable-tfoot > tr > td {
+  @apply !py-1;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+.reveal {
+  animation: reveal 0.6s ease-out forwards;
+}
+.mwl-calendar-month-view .cal-event {
+  padding: 2px 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p-select-option {
+  @apply !py-1;
+}
+
+.app-surface {
+  background-color: var(--sat-background);
+}
+
+.app-navbar {
+  background-color: var(--sat-principal);
+}
+
+.text-1 {
+  color: var(--sat-white);
+}
+
+
+/* Aplica SOLO al SVG que tenga esta clase */
+.svg-inset-shadow {
+  width: 3.75rem;       /* tamaño grande */
+  height: 3.75rem;
+  display: block;
+}
+
+/* El path del SVG */
+.svg-inset-shadow path {
+  fill: #9993F5;
+  filter: url(#inset-shadow);
+}
+
+/* Checkbox activo */
+.p-checkbox.p-checkbox-checked .p-checkbox-box {
+  background-color: #9993F5 !important; /* sky-500 */
+  border-color: #9993F5 !important;
+}
+
+/* Check blanco */
+.p-checkbox.p-checkbox-checked .p-checkbox-icon {
+  color: white !important;
+}
+
+@layer components {
+  .action-btn {
+    @apply
+      !bg-[ECEBF0]
+      !text-black
+      hover:bg-black
+      hover:!text-white
+      !rounded-full
+      transition-all
+      duration-200;
+  }
+}
+
+
+.custom-card {
+  border-radius: 30px !important;
+  overflow: hidden; /* CLAVE para que no se corte */
+}
+
+.custom-tabs-rounded {
+  @apply rounded-[30px] overflow-hidden;
+}
+
+/* barra de tabs */
+.custom-tabs-rounded .p-tablist {
+  @apply rounded-t-[30px];
+}
+
+/* panel de contenido */
+.custom-tabs-rounded .p-tabpanels {
+  @apply rounded-b-[30px];
+}
+
+
+
+/* =========================
+   TAB NORMAL
+========================= */
+.custom-tabs .p-tab {
+  color: #6b7280; /* gris */
+  transition: all 0.2s ease;
+}
+
+/* si tiene span, hereda */
+.custom-tabs .p-tab span {
+  color: inherit;
+}
+
+/* =========================
+   HOVER
+========================= */
+.custom-tabs .p-tab:hover {
+  color: #000;
+}
+
+/* =========================
+   TAB ACTIVO
+========================= */
+.custom-tabs .p-tab.p-tab-active {
+  background-color: #ffffff !important;
+  color: var(--sat-Accent) !important;
+  font-weight: 600;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+
+/* asegura el color si hay span */
+.custom-tabs .p-tab.p-tab-active span {
+  color: inherit !important;
+}
+
+.custom-tabs .p-tablist-tab-list {
+  border-top-left-radius: 30px ;
+  border-top-right-radius: 30px ;
+}
+
+
+
+
+/* BOTÓN BASE */
+.custom-extranet-btn {
+  @apply
+    flex
+    items-center
+    gap-2
+    px-4
+    py-2
+    transition-all
+    duration-200
+    !rounded-full
+    !bg-[ECEBF0]
+    !text-black;
+}
+
+/* QUITAR ESTILO PRIME */
+.custom-extranet-btn.p-button {
+  background: #ECEBF0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* TEXTO */
+.custom-extranet-btn .p-button-label {
+  color: inherit !important;
+}
+
+/* HOVER */
+.custom-extranet-btn:hover {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.custom-extranet-btn:hover .p-button-label {
+  color: #fff !important;
+}
+
+.p-card {
+  border-radius: 30px !important;
+  overflow: hidden;
+}
+
+
+
+.table-header-light .p-datatable-thead > tr > th {
+  background-color: var(--sat-Accent) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  border-color: var(--sat-Accent) !important;
+}
+
+
+@keyframes welcomeUp {
+  0% {
+    transform: translateY(80px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes welcomeSide {
+  0% {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
+
+
+@layer utilities {
+  /* =========================
+     BACKGROUNDS
+     ========================= */
+
+  .bg-primario {
+    background-color: var(--sat-Primario) !important;
+  }
+
+  .bg-secundario {
+    background-color: var(--sat-Secundario) !important;
+  }
+
+  .bg-terciario {
+    background-color: var(--sat-Terciario) !important;
+  }
+
+  .bg-cuaternario {
+    background-color: var(--sat-Cuaternario) !important;
+  }
+
+  .bg-accent {
+    background-color: var(--sat-Accent) !important;
+  }
+
+  .bg-accent-2 {
+    background-color: var(--sat-Accent2) !important;
+  }
+
+  .bg-accent-3 {
+    background-color: var(--sat-Accent3) !important;
+  }
+
+  .bg-accent-4 {
+    background-color: var(--sat-Accent4) !important;
+  }
+
+  .bg-accent-5 {
+    background-color: var(--sat-Accent5) !important;
+  }
+
+
+  .bg-accent-7 {
+    background-color: var(--sat-Accent7) !important;
+  }
+
+  .hover\:bg-accent-7:hover {
+    background: var(--sat-Accent7) !important;
+  }
+
+  /* =========================
+     TEXT COLORS
+     ========================= */
+
+  .text-primario {
+    color: var(--sat-Primario) !important;
+  }
+
+  .text-secundario {
+    color: var(--sat-Secundario) !important;
+  }
+
+  .text-terciario {
+    color: var(--sat-Terciario) !important;
+  }
+
+  .text-cuaternario {
+    color: var(--sat-Cuaternario) !important;
+  }
+
+  .text-accent {
+    color: var(--sat-Accent) !important;
+  }
+
+  .text-accent-2 {
+    color: var(--sat-Accent2) !important;
+  }
+
+  .text-accent-3 {
+    color: var(--sat-Accent3) !important;
+  }
+
+  .text-accent-4 {
+    color: var(--sat-Accent4) !important;
+  }
+
+  .text-accent-5 {
+    color: var(--sat-Accent5) !important;
+  }
+
+
+  .text-accent-7 {
+    color: var(--sat-Accent7) !important;
+  }
+
+  /* =========================
+     BORDERS
+     ========================= */
+
+  .border-primario {
+    border-color: var(--sat-Primario) !important;
+  }
+
+  .border-secundario {
+    border-color: var(--sat-Secundario) !important;
+  }
+
+  .border-terciario {
+    border-color: var(--sat-Terciario) !important;
+  }
+
+  .border-cuaternario {
+    border-color: var(--sat-Cuaternario) !important;
+  }
+
+  .border-accent {
+    border-color: var(--sat-Accent) !important;
+  }
+
+  .border-accent-7 {
+    border-color: var(--sat-Accent-7) !important;
+  }
+}
+
+
+
+
+/* =========================
+   COLOR PICKER CIRCULAR
+========================= */
+
+.color-circle .p-colorpicker-preview {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 9999px !important;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.color-circle .p-colorpicker-preview:hover {
+  transform: scale(1.05);
+  transition: transform 0.15s ease;
+}
+
+.color-circle .p-colorpicker-preview:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(42, 87, 230, 0.3);
+}

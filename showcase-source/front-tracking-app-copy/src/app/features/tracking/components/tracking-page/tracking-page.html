@@ -1,0 +1,26 @@
+<div class="h-full flex flex-col p-8 overflow-y-auto relative pt-28">
+
+  <!-- Header -->
+  <div class="absolute top-25 left-8 right-8 flex items-center gap-4 mb-8 z-10">
+    <a routerLink="/deliveries"
+      class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100 text-gray-500 transition-colors bg-white">
+      <iconify-icon icon="mdi:arrow-left" class="text-xl"></iconify-icon>
+    </a>
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">Tracking de Entrega</h2>
+      <p class="text-gray-500 text-base mt-1 font-mono">{{ delivery()?.id }}</p>
+    </div>
+  </div>
+
+  @if (delivery()) {
+    <div class="flex gap-6 flex-1 min-h-0">
+      <div class="flex-1">
+        <app-live-map [delivery]="delivery()!" />
+      </div>
+      <div class="w-96 h-184 shrink-0 pt-22">
+        <app-status-panel [delivery]="delivery()!" />
+      </div>
+    </div>
+  }
+
+</div>

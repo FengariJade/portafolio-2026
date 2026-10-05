@@ -1,0 +1,390 @@
+<form
+  [formGroup]="formData"
+  (ngSubmit)="onSubmit()"
+  class="grid grid-cols-1 gap-6"
+>
+  <div class="grid grid-cols-1 gap-2">
+    <p-fieldset legend="Información de usuario">
+      <div class="grid grid-cols-1 gap-2">
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="nameUser">
+            Nombre a mostrar <span class="text-xs">*</span>
+          </label>
+          <input id="nameUser" pInputText formControlName="name" class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              " />
+          <div
+            *ngIf="
+              formData.controls.name.invalid && formData.controls.name.touched
+            "
+          >
+            <small *ngIf="formData.controls.name.errors?.['required']">
+              El nombre es requerido.
+            </small>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="displayNameUser">
+            Nombre completo<span class="text-xs">*</span>
+          </label>
+          <input
+            id="displayNameUser"
+            pInputText
+            formControlName="displayName"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="emailUser">
+            Correo electrónico <span class="text-xs">*</span>
+          </label>
+          <input
+            id="emailUser"
+            pInputText
+            formControlName="email"
+            (input)="changeEmail()"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+          <div
+            *ngIf="
+              formData.controls.email.invalid && formData.controls.email.touched
+            "
+          >
+            <small *ngIf="formData.controls.email.errors?.['required']">
+              El correo electrónico es requerido.
+            </small>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="usernameUsuario">
+            Contraseña <span class="text-xs">*</span>
+          </label>
+          <p-password
+            [toggleMask]="true"
+            [feedback]="false"
+            class="
+              w-full
+
+              [&_.p-password-input]:w-full
+              [&_.p-password-input]:min-w-72
+              [&_.p-password-input]:!h-10
+              [&_.p-password-input]:!rounded-full
+              [&_.p-password-input]:!text-sm
+              [&_.p-password-input]:bg-cuaternario
+              [&_.p-password-input]:!border
+              [&_.p-password-input]:!border-transparent
+              [&_.p-password-input:focus]:!border-[#dad9dd]
+              [&_.p-password-input]:transition-all
+              [&_.p-password-input]:duration-200
+
+              [&_.p-password-toggle-icon]:text-gray-500
+              [&_.p-password-toggle-icon:hover]:text-black
+            "
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            formControlName="password"
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="roleuserId">
+            Rol <span class="text-xs">*</span>
+          </label>
+          <p-select
+            id="roleuserId"
+            [options]="listUsers"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="roleId"
+            placeholder="Seleccione..."
+            styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+            panelStyleClass="capitalize"
+            appendTo="body"
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="departmentId">
+            Área <span class="text-xs">*</span>
+          </label>
+          <p-select
+            id="departmentId"
+            [options]="listDepartments"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="departmentId"
+            placeholder="Seleccione..."
+            (ngModelChange)="changeDepartment()"
+            appendTo="body"
+            styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="officeId">
+            Oficina <span class="text-xs">*</span>
+          </label>
+          <p-select
+            id="officeId"
+            [options]="listOffices"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="officeId"
+            placeholder="Seleccione..."
+            appendTo="body"
+            styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+          />
+        </div>
+      </div>
+    </p-fieldset>
+    <div *ngIf="isAloSat" class="flex items-center gap-2 pt-1">
+      <p-checkbox
+        [(ngModel)]="isVicidialUser"
+        binary="true"
+        [ngModelOptions]="{ standalone: true }"
+        (onChange)="toggleVicidial()"
+      >
+      </p-checkbox>
+      <label class="text-sm font-medium pt-0.5" for="isVicidialUser">
+        Agregar configuración vicidial
+      </label>
+    </div>
+    <p-fieldset
+      *ngIf="formData.get('vicidial')?.enabled"
+      legend="Ajustes de VICIdial"
+    >
+      <div class="grid grid-cols-1 gap-2" formGroupName="vicidial">
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="vicidialUser">
+            Username del agente en VICIdial <span class="text-xs">*</span>
+          </label>
+          <input
+            id="vicidialUser"
+            pInputText
+            formControlName="username"
+            pKeyFilter="alphanum"
+            (input)="cleanUsername()"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="vicidialUserPass">
+            Password de usuario en VICIdial <span class="text-xs">*</span>
+          </label>
+          <input
+            id="vicidialUserPass"
+            pInputText
+            formControlName="userPass"
+            pKeyFilter="alphanum"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="vicidialPhoneLogin">
+            Extensión/teléfono del agente <span class="text-xs">*</span>
+          </label>
+          <input
+            id="vicidialPhoneLogin"
+            pInputText
+            formControlName="phoneLogin"
+            pKeyFilter="num"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="text-sm font-medium" for="vicidialPhonePass">
+            Password del teléfono SIP <span class="text-xs">*</span>
+          </label>
+          <input
+            id="vicidialPhonePass"
+            pInputText
+            formControlName="phonePass"
+            pKeyFilter="alphanum"
+            class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+          />
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 gap-2">
+            <label class="text-sm font-medium" for="vicidialUserLevel">
+              Nivel de usuario
+              <span class="text-xs">*</span>
+            </label>
+            <p-select
+              id="vicidialUserLevel"
+              [options]="listLevel"
+              formControlName="userLevel"
+              placeholder="Seleccione..."
+              pTooltip="1=agente, 9=admin"
+              tooltipPosition="top"
+              tooltipStyleClass="!text-xs !font-normal !p-0"
+              appendTo="body"
+              styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+            />
+          </div>
+          <div class="col-span-2 grid grid-cols-1 gap-2">
+            <label class="text-sm font-medium" for="vicidialUserGroup">
+              Grupo del usuario <span class="text-xs">*</span>
+            </label>
+            <p-select
+              id="userGroup"
+              [options]="listUserGroups"
+              optionLabel="groupName"
+              optionValue="userGroup"
+              formControlName="userGroup"
+              placeholder="Seleccione..."
+              styleClass="capitalize"
+              panelStyleClass="capitalize"
+              appendTo="body"
+              styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+            />
+          </div>
+        </div>
+      </div>
+    </p-fieldset>
+  </div>
+  <div class="flex justify-between gap-4">
+    <div class="flex items-center gap-2 py-1">
+      <p-toggleswitch formControlName="status" inputId="activeRole" class="custom-toggle" />
+      <label class="text-sm font-medium pb-1.5" for="activeRole">
+        {{ isActive ? "Activo" : "Inactivo" }}
+      </label>
+    </div>
+    <div class="flex gap-2">
+      <button-cancel (click)="onCancel()" />
+
+      <button
+        pButton
+        type="button"
+        (click)="onCancel()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:!bg-[red]
+        hover:!border-[red]
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+            <span class="font-medium">
+              Cancelar
+            </span>
+      </button>
+
+      <button
+        pButton
+        type="button"
+        [label]="id ? 'Actualizar' : 'Guardar'"
+        [loading]="loading"
+        [disabled]="formData.invalid"
+        (click)="onSubmit()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:bg-accent-7
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+            <iconify-icon
+              icon="mdi:plus-circle-outline"
+              class="text-lg text-inherit"
+            ></iconify-icon>
+
+            <span class="font-medium">
+              Habilidades
+            </span>
+      </button>
+    </div>
+  </div>
+</form>

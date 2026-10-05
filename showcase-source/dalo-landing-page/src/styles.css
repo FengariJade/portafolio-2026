@@ -1,0 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800&display=swap');
+:root{--honey:#ffb703;--honey-deep:#e09e00;--honey-pale:#ffe8a3;--navy:#0d1b2a;--navy-light:#16283d;--slate:#334155;--mist:#f2f4f7;--white:#fff;--sage:#2fbf71;--display:'Montserrat',sans-serif;--mono:'JetBrains Mono',monospace;--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--display);color:var(--navy);background:var(--mist);-webkit-font-smoothing:antialiased;overflow-x:hidden}button,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}a{color:inherit}::selection{background:var(--honey);color:var(--navy)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}

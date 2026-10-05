@@ -1,0 +1,241 @@
+<div class="flex flex-col gap-10">
+
+  <!-- Formulario de paquete -->
+  <div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">
+      {{ editingIndex !== null ? 'Editar Paquete' : 'Agregar Paquete' }}
+    </h3>
+    <p class="text-gray-500 text-sm mb-6">Completa los datos y agrégalo al carrito.</p>
+
+    <form [formGroup]="packageForm" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+
+      <div class="flex flex-col gap-2 sm:col-span-2 xl:col-span-3">
+        <label class="text-sm font-medium text-gray-700">Descripción del contenido</label>
+        <input formControlName="description" type="text" placeholder="Ej: Ropa, documentos, electrónicos"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+        @if (isInvalid(packageForm, 'description')) {
+          <span class="text-red-500 text-xs">Campo requerido</span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Categoría</label>
+        <select formControlName="category"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all">
+          <option value="documento">Documento</option>
+          <option value="electronico">Electrónico</option>
+          <option value="ropa">Ropa</option>
+          <option value="alimento">Alimento</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Peso (kg)</label>
+        <input formControlName="weight" type="number" placeholder="0.5"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Ancho (cm)</label>
+        <input formControlName="width" type="number" placeholder="20"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Alto (cm)</label>
+        <input formControlName="height" type="number" placeholder="20"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Largo (cm)</label>
+        <input formControlName="length" type="number" placeholder="30"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="flex items-center gap-3 sm:col-span-2 xl:col-span-2 mt-1">
+        <input formControlName="fragile" type="checkbox" id="fragile" class="w-4 h-4 accent-violet-600"/>
+        <label for="fragile" class="text-sm text-gray-700">Es un paquete frágil</label>
+      </div>
+
+      <div class="flex items-end">
+        <button type="button" (click)="addPackage()"
+          class="w-full px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-all">
+          {{ editingIndex !== null ? '✓ Guardar cambios' : '+ Agregar al carrito' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Carrito -->
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">
+        Paquetes agregados
+        @if (packageList.length > 0) {
+          <span class="ml-2 px-2.5 py-0.5 bg-violet-100 text-violet-700 text-xs font-bold rounded-full">
+            {{ packageList.length }}
+          </span>
+        }
+      </h3>
+    </div>
+
+    @if (packageList.length === 0) {
+      <div class="border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center">
+        <p class="text-gray-400 text-sm">Aún no has agregado paquetes.</p>
+        <p class="text-gray-400 text-xs mt-1">Completa el formulario de arriba y haz clic en "Agregar al carrito".</p>
+      </div>
+    } @else {
+      <div class="flex flex-col gap-3">
+        @for (pkg of packageList; track pkg.id; let i = $index) {
+          <div class="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-xl px-5 py-4">
+
+            <div class="w-8 h-8 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+              {{ i + 1 }}
+            </div>
+
+            <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <p class="text-xs text-gray-400">Descripción</p>
+                <p class="text-sm font-medium text-gray-800 truncate">{{ pkg.description }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400">Categoría</p>
+                <p class="text-sm text-gray-700 capitalize">{{ pkg.category }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400">Peso unit.</p>
+                <p class="text-sm text-gray-700">{{ pkg.weight }} kg</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400">Dimensiones</p>
+                <p class="text-sm text-gray-700">{{ pkg.width }}x{{ pkg.height }}x{{ pkg.length }} cm</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xs text-gray-400 mr-1">Cant.</span>
+              <button (click)="decreaseQty(i)" [disabled]="pkg.quantity === 1" [class.opacity-40]="pkg.quantity === 1"
+                class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-100 text-gray-600 font-bold transition-colors">−</button>
+              <span class="w-8 text-center text-sm font-bold text-gray-800">{{ pkg.quantity }}</span>
+              <button (click)="increaseQty(i)"
+                class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-100 text-gray-600 font-bold transition-colors">+</button>
+            </div>
+
+            <div class="text-right shrink-0 min-w-16">
+              <p class="text-xs text-gray-400">Subtotal</p>
+              <p class="text-sm font-semibold text-violet-700">{{ pkg.weight * pkg.quantity }} kg</p>
+            </div>
+
+            <div class="shrink-0 w-14">
+              @if (pkg.fragile) {
+                <span class="px-2 py-1 bg-orange-100 text-orange-600 text-xs font-semibold rounded-lg">Frágil</span>
+              }
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button (click)="editPackage(i)"
+                class="px-3 py-1.5 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg transition-colors">Editar</button>
+              <button (click)="removePackage(i)"
+                class="px-3 py-1.5 text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">Eliminar</button>
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <div class="mt-4 flex items-center gap-6 px-5 py-3 bg-violet-50 rounded-xl">
+        <p class="text-sm text-violet-700 font-medium">Tipos: <span class="font-bold">{{ packageList.length }}</span></p>
+        <p class="text-sm text-violet-700 font-medium">Unidades: <span class="font-bold">{{ getTotalPackages() }}</span></p>
+        <p class="text-sm text-violet-700 font-medium">Peso total: <span class="font-bold">{{ getTotalWeight() }} kg</span></p>
+      </div>
+    }
+  </div>
+
+  <!-- Direcciones + Precio -->
+  <div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-8">Direcciones y Tarifa</h3>
+
+    <form [formGroup]="addressForm" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+
+      <!-- Precio -->
+      <div class="flex flex-col gap-2 sm:col-span-2 xl:col-span-1">
+        <label class="text-sm font-medium text-gray-700">Precio del envío (S/.)</label>
+        <input formControlName="price" type="number" placeholder="0.00"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="sm:col-span-2 xl:col-span-3 border-t border-gray-100 pt-2">
+        <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider">Recogida</p>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:col-span-2 xl:col-span-3">
+        <label class="text-sm font-medium text-gray-700">Dirección de recogida</label>
+        <input formControlName="pickupAddress" type="text" placeholder="Av. Principal 123"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+        @if (isInvalid(addressForm, 'pickupAddress')) {
+          <span class="text-red-500 text-xs">Campo requerido</span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Ciudad</label>
+        <input formControlName="pickupCity" type="text" placeholder="Lima"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+        @if (isInvalid(addressForm, 'pickupCity')) {
+          <span class="text-red-500 text-xs">Campo requerido</span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Referencia de recogida</label>
+        <input formControlName="pickupReference" type="text" placeholder="Frente al parque"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+      <div class="sm:col-span-2 xl:col-span-3 border-t border-gray-100 pt-2">
+        <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider">Entrega</p>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:col-span-2 xl:col-span-3">
+        <label class="text-sm font-medium text-gray-700">Dirección de entrega</label>
+        <input formControlName="deliveryAddress" type="text" placeholder="Calle Secundaria 456"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+        @if (isInvalid(addressForm, 'deliveryAddress')) {
+          <span class="text-red-500 text-xs">Campo requerido</span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Ciudad</label>
+        <input formControlName="deliveryCity" type="text" placeholder="Arequipa"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+        @if (isInvalid(addressForm, 'deliveryCity')) {
+          <span class="text-red-500 text-xs">Campo requerido</span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Referencia de entrega</label>
+        <input formControlName="deliveryReference" type="text" placeholder="Edificio azul"
+          class="border border-gray-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all"/>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Navegación -->
+  <div class="flex justify-between">
+    <button (click)="prev.emit()"
+      class="px-8 py-3.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+      ← Anterior
+    </button>
+    <button (click)="onNext()"
+      class="px-8 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-all">
+      Siguiente →
+    </button>
+  </div>
+
+</div>

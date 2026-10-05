@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Custom Fonts (fontIntro) ──────────────────────────────────── */
+@font-face {
+  font-family: 'Aromatron';
+  src: url('/fonts/fontIntro/Aromatron-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arroy';
+  src: url('/fonts/fontIntro/arroy.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Beckan';
+  src: url('/fonts/fontIntro/Beckan-Personal Use.otf') format('opentype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Narnia';
+  src: url('/fonts/fontIntro/Narnia.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pask';
+  src: url('/fonts/fontIntro/Pask-Personal Use.otf') format('opentype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MinionPro';
+  src: url('/fonts/fontIntro/MinionPro-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MinionPro';
+  src: url('/fonts/fontIntro/MinionPro-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MinionPro';
+  src: url('/fonts/fontIntro/MinionPro-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('/fonts/fontIntro/MYRIADPRO-BOLD.OTF') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('/fonts/fontIntro/MYRIADPRO-REGULAR.OTF') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ─── CSS Variables ─────────────────────────────────────────────── */
+:root {
+  --olive-dark:   #050D1A;
+  --olive-mid:    #1B3A6B;
+  --olive-light:  #2563C4;
+  --gold:         #7A9BBF;
+  --cream:        #EAF1F7;
+  --white:        #F8FBFF;
+  --hero-gradient:#050D1A;
+  --hero-gradient-2:#0A1628;
+  --hero-gradient-3:#1A1A2E;
+  --hero-gradient-4:#1B3A6B;
+  --hero-gradient-5:#2563C4;
+  --hero-gradient-6:#7A9BBF;
+  --hero-gradient-7:#C2D4E4;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--olive-dark);
+  font-family: var(--font-body), Georgia, serif;
+  overflow-x: hidden;
+}
+
+/* ─── Selection ─────────────────────────────────────────────────── */
+::selection {
+  background: var(--olive-light);
+  color: var(--cream);
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; }
+::-webkit-scrollbar-track  { background: var(--olive-dark); }
+::-webkit-scrollbar-thumb  { background: var(--olive-light); border-radius: 3px; }
+
+/* ─── Utility classes ───────────────────────────────────────────── */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #2563C4, #7A9BBF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-card {
+    background: linear-gradient(145deg, #0A1628, #1B3A6B);
+  }
+
+  .section-padding {
+    @apply px-6 py-20 md:px-16 lg:px-24;
+  }
+
+  .tag-pill {
+    @apply text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full;
+  }
+}
+
+/* ─── Deco shapes ───────────────────────────────────────────────── */
+.deco-asterisk {
+  display: inline-block;
+  color: var(--olive-light);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* ─── GSAP initial state (avoid flash) ─────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+}
+[data-hero-name],
+[data-hero-role],
+[data-hero-info],
+[data-hero-btn],
+[data-hero-deco] {
+  opacity: 0;
+}

@@ -1,0 +1,192 @@
+<div class="min-h-screen bg-gradient-to-br from-violet-50 via-white to-gray-50 flex flex-col">
+
+  <!-- Header público -->
+  <header class="bg-white border-b border-gray-100 shadow-sm px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <iconify-icon icon="mdi:truck-delivery" class="text-violet-600" style="font-size:28px"></iconify-icon>
+      <span class="text-lg font-bold text-gray-800">Flotexs</span>
+      <span class="text-gray-300 mx-2">|</span>
+      <span class="text-sm text-gray-500">Consulta de envío</span>
+    </div>
+    <a routerLink="/login"
+      class="text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors">
+      Iniciar sesión
+    </a>
+  </header>
+
+  <!-- Hero search -->
+  <div class="flex flex-col items-center px-4 pt-14 pb-10">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-3">¿Dónde está tu paquete?</h1>
+      <p class="text-gray-500 text-lg">Ingresa tu código de tracking o de paquete</p>
+    </div>
+
+    <!-- Buscador -->
+    <div class="w-full max-w-xl flex gap-3">
+      <div class="flex-1 flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3.5 shadow-sm focus-within:ring-2 focus-within:ring-violet-300 focus-within:border-violet-400 transition-all">
+        <iconify-icon icon="mdi:magnify" class="text-gray-400 shrink-0" style="font-size:22px"></iconify-icon>
+        <input
+          type="text"
+          placeholder="Ej: AA4A57759FD6 o PKG-008E3FBC"
+          [ngModel]="searchCode()"
+          (ngModelChange)="searchCode.set($event)"
+          (keyup.enter)="search()"
+          class="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400" />
+        @if (searchCode()) {
+          <button (click)="searchCode.set(''); result.set(null); searched.set(false)"
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+            <iconify-icon icon="mdi:close" style="font-size:18px"></iconify-icon>
+          </button>
+        }
+      </div>
+      <button (click)="search()" [disabled]="loading()"
+        class="px-6 py-3.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-semibold rounded-2xl shadow-sm transition-all flex items-center gap-2">
+        @if (loading()) {
+          <iconify-icon icon="mdi:loading" class="animate-spin" style="font-size:18px"></iconify-icon>
+        }
+        Rastrear
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="flex-1 flex flex-col items-center px-4 pb-16">
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="w-full max-w-xl">
+        <div class="bg-red-50 border border-red-200 rounded-2xl px-6 py-8 text-center">
+          <iconify-icon icon="mdi:package-variant-remove" class="text-red-300 mb-3 block mx-auto" style="font-size:48px"></iconify-icon>
+          <p class="text-red-600 font-semibold text-lg">No encontrado</p>
+          <p class="text-red-400 text-sm mt-1">{{ error() }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Estado inicial -->
+    @if (!searched() && !loading()) {
+      <div class="text-center mt-4">
+        <iconify-icon icon="mdi:package-variant-closed" class="text-gray-200 block mx-auto mb-4" style="font-size:80px"></iconify-icon>
+        <p class="text-gray-400 text-sm">Ingresa un código para ver el estado de tu envío</p>
+      </div>
+    }
+
+    <!-- Resultado -->
+    @if (result(); as pkg) {
+      <div class="w-full max-w-2xl space-y-5">
+
+        <!-- Card principal -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+
+          <!-- Status header -->
+          <div class="px-7 py-5 flex items-center justify-between border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                [ngClass]="statusColor[pkg.trackingStatus]">
+                <iconify-icon [attr.icon]="statusIcon[pkg.trackingStatus] ?? 'mdi:package'" style="font-size:24px"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-0.5">Estado actual</p>
+                <p class="text-xl font-bold text-gray-800">{{ statusLabel[pkg.trackingStatus] ?? pkg.trackingStatus }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-400">Código</p>
+              <p class="font-mono font-bold text-gray-700">{{ pkg.trackingCode }}</p>
+            </div>
+          </div>
+
+          <!-- reemplaza la sección grid de info del paquete -->
+            <div class="px-7 py-5 grid grid-cols-2 gap-4 text-sm border-b border-gray-50">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Remitente</p>
+                    <p class="font-medium text-gray-800">{{ pkg.senderName }}</p>
+                    <p class="text-xs text-gray-400">{{ pkg.senderAddress }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Destinatario</p>
+                    <p class="font-medium text-gray-800">{{ pkg.receiverName }}</p>
+                    <p class="text-xs text-gray-400">{{ pkg.receiverAddress }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Código tracking</p>
+                    <p class="font-mono text-gray-700">{{ pkg.trackingCode }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Registrado</p>
+                    <p class="text-gray-700">{{ pkg.createdAt | date:'dd MMM yyyy' }}</p>
+                </div>
+            </div>
+
+            <!-- Banner excepción — solo si el estado es rama especial -->
+        @if (isExceptionStatus) {
+        <div class="px-7 py-4 bg-red-50 border-b border-red-100 flex items-center gap-3">
+            <iconify-icon [attr.icon]="statusIcon[pkg.trackingStatus]" class="text-red-500 shrink-0" style="font-size:24px"></iconify-icon>
+            <div>
+            <p class="font-semibold text-red-700">{{ statusLabel[pkg.trackingStatus] }}</p>
+            <p class="text-xs text-red-400">Este envío requiere atención. Contacta al remitente o transportista.</p>
+            </div>
+        </div>
+        }
+
+          <!-- ── Línea de tiempo ───────────────────────── -->
+          <div class="px-7 py-6">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">Progreso del envío</p>
+
+            <div class="relative">
+              <!-- Línea de fondo -->
+              <div class="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-100"></div>
+
+              <div class="space-y-6">
+                @for (step of timeline; track step.status) {
+                  <div class="relative flex items-start gap-5">
+
+                    <!-- Dot -->
+                    <div class="relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all"
+                      [ngClass]="step.active
+                        ? (dotColor[step.status] + ' shadow-lg ring-4 ring-offset-2 ring-violet-100')
+                        : step.done
+                          ? 'bg-emerald-500'
+                          : 'bg-gray-100'">
+                      @if (step.done) {
+                        <iconify-icon icon="mdi:check" class="text-white" style="font-size:18px"></iconify-icon>
+                      } @else if (step.active) {
+                        <iconify-icon [attr.icon]="statusIcon[step.status]" class="text-white" style="font-size:18px"></iconify-icon>
+                      } @else {
+                        <iconify-icon [attr.icon]="statusIcon[step.status]" class="text-gray-300" style="font-size:18px"></iconify-icon>
+                      }
+                    </div>
+
+                    <!-- Texto -->
+                    <div class="flex-1 pt-1.5">
+                      <p class="font-semibold text-sm"
+                        [ngClass]="step.active ? 'text-gray-800' : step.done ? 'text-gray-600' : 'text-gray-300'">
+                        {{ step.label }}
+                      </p>
+                      @if (step.active) {
+                        <p class="text-xs text-violet-500 font-medium mt-0.5 flex items-center gap-1">
+                          <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse inline-block"></span>
+                          Estado actual
+                        </p>
+                      }
+                    </div>
+
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer card -->
+        <p class="text-center text-xs text-gray-400">
+          Registrado el {{ pkg.createdAt | date:'dd MMM yyyy, HH:mm' }} ·
+          <a routerLink="/login" class="text-violet-500 hover:underline">Acceso operadores</a>
+        </p>
+
+      </div>
+    }
+
+  </div>
+</div>

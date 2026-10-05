@@ -1,0 +1,216 @@
+<!-- 1. Contenedor raíz: ahora SÍ ocupa toda la altura y bloquea scroll del body -->
+<div class="h-full flex flex-col gap-4 overflow-hidden">
+  <!-- Header (exactamente igual que tenías) -->
+  <div class="bg-gray-50 shadow p-4 flex-shrink-0 !rounded-[30px]">
+    <div class="flex justify-between items-center">
+      <div class="pl-3"><app-title-sat /></div>
+      <button
+        pButton
+        type="button"
+        (click)="addNew()"
+        class="
+          bg-cuaternario
+          !text-black
+          hover:bg-accent-7
+          hover:!text-white
+          !rounded-full
+          transition-all
+          duration-200
+          flex
+          items-center
+          gap-2
+          px-4
+          py-2
+        "
+      >
+        <iconify-icon
+          icon="mdi:plus-circle-outline"
+          class="text-lg text-inherit"
+        ></iconify-icon>
+
+        <span class="font-medium">
+          Crear Reporte
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Área principal: flex que reparte el espacio restante -->
+  <p-card
+    styleClass="
+    h-[calc(95vh-16.5rem)]
+    overflow-hidden
+    [&_.p-card-body]:h-full
+    [&_.p-card-content]:h-full
+    [&_.p-card-body]:!p-0
+    [&_.p-card-content]:!p-0
+    !rounded-[30px]
+  "
+  >
+    <div class="h-full w-full flex">
+      <!-- SIDEBAR IZQUIERDO -->
+      <div class="min-w-96 h-full flex flex-col px-4 py-4">
+        <div class="flex flex-col h-full gap-4">
+          <!-- Search bar fija arriba -->
+          <div class="flex-shrink-0">
+             <div class="flex-1 min-h-0 overflow-y-auto space-y-3 pr-2">
+              <p-iconfield>
+                <p-inputicon>
+                  <iconify-icon
+                    icon="hugeicons:global-search"
+                    class="text-xl absolute left-3 top-3 text-gray-400 z-10"
+                  />
+                </p-inputicon>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="searchTerm"
+                  (ngModelChange)="loadReportsFilter()"
+                  placeholder="Buscar por nombre de reporte"
+                  class="
+                    w-full
+                    pl-10 pr-4 py-2
+                    border border-gray-200
+                    bg-cuaternario
+                    !rounded-[30px]
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-blue-500
+                  "
+                />
+              </p-iconfield>
+            </div>
+          </div>
+
+          <!-- Lista con scroll INDEPENDIENTE ← Aquí está la magia -->
+          <div class="flex-1 overflow-y-auto space-y-3">
+            <!-- Tus cards exactamente iguales -->
+            <div
+              *ngFor="let report of reports"
+              class="group cursor-pointer bg-terciario rounded-xl border transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              [class.border-indigo-500]="selectedReport?.id === report.id"
+              [class.border-slate-200]="selectedReport?.id !== report.id"
+              [class.shadow-md]="selectedReport?.id === report.id"
+              (click)="selectReport(report)"
+            >
+              <div class="p-4">
+                <div class="flex items-start justify-between mb-2">
+                  <h3
+                    class="font-semibold text-slate-800 text-base leading-tight group-hover:text-indigo-600 transition-colors"
+                  >
+                    {{ report.name }}
+                  </h3>
+                </div>
+                <p
+                  *ngIf="!!report.description"
+                  class="text-sm text-slate-600 line-clamp-2 mb-3"
+                >
+                  {{ report.description }}
+                </p>
+                <div
+                  class="flex items-center justify-between text-xs text-slate-500"
+                >
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="px-2.5 py-1 text-xs font-medium rounded-full shrink-0"
+                      [ngClass]="{
+                        'bg-blue-100 text-blue-700': report.type === 'metabase',
+                        'bg-green-100 text-green-700':
+                          report.type === 'vicidial',
+                        'bg-purple-100 text-purple-700':
+                          report.type === 'custom'
+                      }"
+                    >
+                      {{ report.type | titlecase }}
+                    </span>
+                    <div class="flex items-center gap-1">
+                      <iconify-icon
+                        icon="mdi:chart-box-outline"
+                        class="text-base"
+                      ></iconify-icon>
+                      <span>ID: {{ report.dashboardId }}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <button-edit
+                      (click)="$event.stopPropagation(); editReport(report)"
+                    />
+                    <btn-delete
+                      (click)="$event.stopPropagation(); deleteReport(report)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="reports.length === 0"
+              class="text-center py-12 text-slate-500"
+            >
+              <iconify-icon
+                icon="mdi:folder-open-outline"
+                class="text-6xl text-slate-300 mb-4"
+              ></iconify-icon>
+              <p>No se encontraron reportes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-0 h-full border-r border-slate-300"></div>
+
+      <!-- PANEL DERECHO (iframe + loading + placeholder) -->
+      <div class="flex-1 h-full overflow-auto">
+        <!-- Loading -->
+        <div
+          *ngIf="isLoading"
+          class="h-full flex-1 flex items-center justify-center"
+        >
+          <div class="text-center">
+            <div
+              class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-indigo-600 mb-4"
+            ></div>
+            <p class="text-slate-600 font-medium">Cargando dashboard...</p>
+          </div>
+        </div>
+
+        <!-- Iframe con scroll independiente -->
+        <div *ngIf="!isLoading && iframeUrl" class="h-full flex-1">
+          <div class="shadow-xl h-full overflow-hidden rounded-e-2xl">
+            <iframe
+              [src]="iframeUrl"
+              frameborder="0"
+              class="w-full h-full"
+              allowtransparency
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Sin selección -->
+        <div
+          *ngIf="!isLoading && !iframeUrl"
+          class="h-full flex-1 flex items-center justify-center"
+        >
+          <div class="text-center max-w-md px-3">
+            <div
+              class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full py-3 px-4 inline-block mb-6"
+            >
+              <iconify-icon
+                icon="fluent-color:chart-multiple-16"
+                class="text-7xl text-indigo-600"
+              ></iconify-icon>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-3">
+              Selecciona un reporte
+            </h2>
+            <p class="text-slate-600">
+              Elige un dashboard de la lista para visualizar sus datos y
+              métricas
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>

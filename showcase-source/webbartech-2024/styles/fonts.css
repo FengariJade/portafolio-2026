@@ -1,0 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+@font-face {
+  font-family: "Dirtyline 36";
+  src: url("/fonts/dirtyline-36daysoftype-2022.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Mango Grotesque";
+  src: url("/fonts/MangoGrotesque-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: die-grotesk-b;
+  src: url("/fonts/die-grotesk-b-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Futura Medium"; /* Nombre que usarás para referenciar la fuente */
+  src: url("/fonts/futura_medium_bt.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Orbitron-ExtraBold";
+   src: url("/fonts/Orbitron-ExtraBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nasalization-Rg";
+   src: url("/fonts/Nasalization Rg.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url("/fonts/MyriadPro/MyriadPro-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url("/fonts/MyriadPro/MyriadPro-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url("/fonts/MyriadPro/MyriadPro-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: "Myriad Pro";
+    src: url("/fonts/MyriadPro/MyriadPro-SemiBoldIt.otf") format("opentype");
+    font-weight: 600;
+    font-style: italic;    
+  }
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url("/fonts/MyriadPro/MyriadPro-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url("/fonts/MyriadPro/MyriadPro-BoldIt.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Myriad Pro Condensed";
+  src: url("/fonts/MyriadPro/MyriadPro-Cond.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro Condensed";
+  src: url("/fonts/MyriadPro/MyriadPro-BoldCond.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro Condensed";
+  src: url("/fonts/MyriadPro/MyriadPro-CondIt.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Myriad Pro Condensed";
+  src: url("/fonts/MyriadPro/MyriadPro-BoldCondIt.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Letra De Su Hija";
+  src: url("/fonts/LetraDeSuHijaRegular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Palfian";
+  src: url("/fonts/Palfian.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yonella";
+  src: url("/fonts/Yonella.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DMsans";
+  src: url("/fonts/newfonts/DMSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "VectorBold";
+  src: url("/fonts/newfonts/Charge Vector Bold.otf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+

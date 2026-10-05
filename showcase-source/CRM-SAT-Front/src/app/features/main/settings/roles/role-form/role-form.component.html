@@ -1,0 +1,93 @@
+<form
+  [formGroup]="formData"
+  class="grid grid-cols-1 gap-6"
+>
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium" for="nameRole">
+        Nombre <span class="text-xs">*</span>
+      </label>
+      <input id="nameRole" pInputText formControlName="name" />
+      <div
+        *ngIf="formData.controls.name.invalid && formData.controls.name.touched"
+      >
+        <small *ngIf="formData.controls.name.errors?.['required']"
+          >El nombre es requerido.</small
+        >
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium" for="descriptionRole">
+        Descripción
+      </label>
+      <textarea
+        id="descriptionRole"
+        rows="2"
+        cols="30"
+        pTextarea
+        formControlName="description"
+      ></textarea>
+    </div>
+  </div>
+  <div class="flex justify-end gap-4">
+    <!-- <div class="flex items-center gap-2 py-1">
+      <p-toggleswitch formControlName="status" inputId="activeRole" />
+      <label class="text-sm font-medium pb-1.5" for="activeRole">{{
+        isActive ? "Activo" : "Inactivo"
+      }}</label>
+    </div> -->
+    <div class="flex gap-2">
+      <button
+        pButton
+        type="button"
+        (click)="onCancel()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:!bg-[red]
+        hover:!border-[red]
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+          <span class="font-medium">
+            Cancelar
+          </span>
+      </button>
+  
+      <button
+        pButton
+        type="button"
+        [label]="id ? 'Actualizar' : 'Guardar'"
+        [loading]="loading"
+        [disabled]="formData.invalid"
+        (click)="onSubmit()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:bg-accent-7
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+            <iconify-icon
+              icon="material-symbols-light:save-outline-rounded"
+              class="text-lg text-inherit"
+            ></iconify-icon>
+      </button>
+	  
+    </div>
+  </div>
+</form>

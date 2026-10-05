@@ -1,0 +1,145 @@
+<!--
+  Componente de listado y gestión de entregas (paquetes).
+  Deliveries management list component.
+-->
+
+<div class="h-full flex flex-col pt-30 p-8 overflow-y-auto" (click)="closeMenu()">
+
+  <!-- ══ ENCABEZADO / HEADER ══ -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">Entregas</h2>
+      <p class="text-gray-500 text-base mt-1">Listado de todos los envíos registrados</p>
+    </div>
+  </div>
+
+  <app-delivery-filter
+    [searchQuery]="searchQuery()"
+    [selectedStatus]="selectedStatus()"
+    [hasActiveFilters]="hasActiveFilters"
+    [resultsCount]="totalItems()"
+    (searchChange)="onSearchChange($event)"
+    (statusChange)="onStatusChange($event)"
+    (clear)="clearFilters()">
+  </app-delivery-filter>
+
+  <!-- ══ TABLA DE PAQUETES / PACKAGES TABLE ══ -->
+  <!--
+    NOTA DE SEGURIDAD / SECURITY NOTE:
+    Asegurarse de que packageCode, senderName y destination sean sanitizados en el backend
+    antes de ser almacenados, para prevenir inyección de datos.
+    Ensure packageCode, senderName and destination are sanitized on the backend
+    before storage to prevent data injection.
+  -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-visible">
+    <app-delivery-table
+      [packages]="filteredPackages()"
+      [openMenuId]="openMenuId()"
+      [errorLoad]="errorLoad()"
+      (detail)="openDetail($event)"
+      (edit)="openEdit($event)"
+      (status)="openStatusModal($event)"
+      (delete)="openDeleteConfirm($event)"
+      (toggleMenu)="toggleMenu($event.id, $event.event)"
+      (closeMenu)="closeMenu()"
+    />
+  </div>
+
+  <!-- Paginación -->
+  @if (totalPages > 1) {
+    <div class="flex items-center justify-between mt-4 px-1">
+
+      <p class="text-sm text-gray-400">
+        Mostrando {{ (currentPage() - 1) * pageSize + 1 }}–{{ showingTo }}
+        de {{ totalItems() }} registros
+      </p>
+
+      <div class="flex items-center gap-1">
+
+        <!-- Anterior -->
+        <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          <iconify-icon icon="mdi:chevron-left" style="font-size:18px"></iconify-icon>
+        </button>
+
+        <!-- Páginas -->
+        @for (page of pages; track $index) {
+          @if (page === 0) {
+            <span class="w-9 h-9 flex items-center justify-center text-gray-300 text-sm">…</span>
+          } @else {
+            <button (click)="goToPage(page)"
+              class="w-9 h-9 flex items-center justify-center rounded-xl text-sm font-medium transition-colors"
+              [ngClass]="page === currentPage()
+                ? 'bg-violet-600 text-white shadow-sm'
+                : 'text-gray-600 hover:bg-gray-100'">
+              {{ page }}
+            </button>
+          }
+        }
+
+        <!-- Siguiente -->
+        <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          <iconify-icon icon="mdi:chevron-right" style="font-size:18px"></iconify-icon>
+        </button>
+
+      </div>
+    </div>
+  }
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: DETALLE DE PAQUETE / PACKAGE DETAIL MODAL
+     Muestra información completa de solo lectura del paquete.
+     Shows full read-only information of the package.
+══════════════════════════════════════════════════════════ -->
+<app-delivery-detail-modal
+  [package]="selectedPackage()"
+  [loading]="loadingDetail()"
+  [error]="errorDetail()"
+  (close)="closeDetail()"
+/>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: EDICIÓN DE ENTREGA / EDIT DELIVERY MODAL
+     Permite editar campos opcionales: persona de recojo y notas.
+     Allows editing optional fields: pickup person and notes.
+     Los campos del remitente/destinatario son de solo lectura aquí.
+     Sender/receiver fields are read-only here.
+══════════════════════════════════════════════════════════ -->
+<app-delivery-edit-modal
+  [package]="editingPackage()"
+  [loading]="loadingEdit()"
+  [error]="errorEdit()"
+  (close)="closeEdit()"
+  (save)="submitEdit($event)"
+/>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: CONFIRMACIÓN DE ELIMINACIÓN / DELETE CONFIRMATION MODAL
+     Acción destructiva — requiere confirmación explícita del usuario.
+     Destructive action — requires explicit user confirmation.
+══════════════════════════════════════════════════════════ -->
+<app-delivery-delete-modal
+  [package]="deletingPackage()"
+  [error]="errorDelete()"
+  (close)="closeDeleteConfirm()"
+  (confirm)="confirmDelete()"
+/>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: CAMBIO DE ESTADO / STATUS CHANGE MODAL
+     Permite al operador actualizar el estado interno y el estado
+     de tracking visible para el cliente.
+     Allows the operator to update the internal status and the
+     tracking status visible to the customer.
+══════════════════════════════════════════════════════════ -->
+<app-delivery-status-modal
+  [package]="statusPackage()"
+  [loading]="loadingStatus()"
+  [error]="errorStatus()"
+  (close)="closeStatusModal()"
+  (save)="submitStatus($event)"
+/>

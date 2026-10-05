@@ -1,0 +1,35 @@
+<div
+  class="mb-5 mt-4 mr-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-center gap-4"
+>
+  @for(view of listScreens; track $index) {
+  <a
+    class="
+      flex flex-col items-center gap-2
+      shadow-lg
+      bg-terciario
+      hover:bg-accent-7
+      text-black
+      hover:text-white
+      p-3
+      rounded-2xl
+      cursor-pointer
+      duration-300
+      ease-in-out
+      hover:scale-105
+      hover:shadow-2xl
+    "
+    [routerLink]="view.link"
+  >
+    <div class="flex justify-center items-center mb-2">
+      <span
+        class="w-12 h-12 rounded-full flex justify-center items-center"
+      >
+        <iconify-icon [icon]="view.icon" class="text-3xl" />
+      </span>
+    </div>
+    <div class="flex flex-col items-center">
+      <h6 class="font-semibold mb-1">{{ view.label }}</h6>
+    </div>
+  </a>
+  }
+</div>

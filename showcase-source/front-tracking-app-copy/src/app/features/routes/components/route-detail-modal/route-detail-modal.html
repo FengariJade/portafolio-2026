@@ -1,0 +1,216 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+  (click)="close.emit()">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-violet-600 to-violet-500 px-7 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <iconify-icon icon="mdi:routes" class="text-white" style="font-size:24px"></iconify-icon>
+        <div>
+          <p class="text-violet-200 text-xs uppercase tracking-widest">Detalle de ruta</p>
+          <p class="text-white font-bold text-lg leading-tight">{{ route()?.name ?? '...' }}</p>
+        </div>
+      </div>
+      <button (click)="close.emit()"
+        class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center">
+        <iconify-icon icon="mdi:close" class="text-white"></iconify-icon>
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div class="flex items-center justify-center py-16">
+        <iconify-icon icon="mdi:loading" class="text-violet-400 animate-spin" style="font-size:32px"></iconify-icon>
+      </div>
+    }
+
+    @if (!loading() && route(); as r) {
+      <div class="overflow-y-auto flex-1 px-7 py-6 space-y-6 text-sm">
+
+        <!-- Info general -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="px-3 py-1 bg-gray-100 text-gray-700 font-mono font-bold rounded-lg text-xs">{{ r.code }}</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="r.status | routeStatus:'class'">
+            {{ r.status | routeStatus }}
+          </span>
+          @if (r.distanceKm) {
+            <span class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium">
+              <iconify-icon icon="mdi:map-marker-distance" style="font-size:14px"></iconify-icon>
+              {{ r.distanceKm }} km
+            </span>
+          }
+          @if (r.estimatedDurationHours) {
+            <span class="flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-medium">
+              <iconify-icon icon="mdi:clock-outline" style="font-size:14px"></iconify-icon>
+              {{ r.estimatedDurationHours }} h
+            </span>
+          }
+        </div>
+
+        <!-- Trayecto visual -->
+        <div class="bg-gray-50 rounded-2xl p-5">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Trayecto</p>
+          <div class="flex items-center gap-3">
+            <!-- Origen -->
+            <div class="flex-1 bg-white rounded-xl p-3 border border-violet-100">
+              <div class="flex items-center gap-2 mb-1">
+                <iconify-icon icon="mdi:map-marker-up" class="text-violet-500" style="font-size:18px"></iconify-icon>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-medium">Origen</span>
+              </div>
+              <p class="font-semibold text-gray-800">{{ originWarehouse()?.name ?? '—' }}</p>
+              <p class="text-xs text-gray-400">{{ originWarehouse()?.city }}</p>
+            </div>
+
+            <!-- Línea -->
+            <div class="flex flex-col items-center gap-1 shrink-0">
+              <div class="w-8 h-px bg-violet-300"></div>
+              <iconify-icon icon="mdi:arrow-right" class="text-violet-400" style="font-size:16px"></iconify-icon>
+              <div class="w-8 h-px bg-violet-300"></div>
+            </div>
+
+            <!-- Destino -->
+            <div class="flex-1 bg-white rounded-xl p-3 border border-emerald-100">
+              <div class="flex items-center gap-2 mb-1">
+                <iconify-icon icon="mdi:map-marker-check" class="text-emerald-500" style="font-size:18px"></iconify-icon>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-medium">Destino</span>
+              </div>
+              <p class="font-semibold text-gray-800">{{ destWarehouse()?.name ?? '—' }}</p>
+              <p class="text-xs text-gray-400">{{ destWarehouse()?.city }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FLOTEXS-47: Paradas intermedias ──────────── -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Paradas intermedias</p>
+            <button (click)="addingNode.set(!addingNode())"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg transition-colors">
+              <iconify-icon icon="mdi:plus" style="font-size:14px"></iconify-icon>
+              Agregar parada
+            </button>
+          </div>
+
+          <!-- Timeline de paradas -->
+          @if (sortedNodes.length > 0) {
+            <div class="relative pl-6 space-y-3">
+              <!-- Línea vertical -->
+              <div class="absolute left-2 top-2 bottom-2 w-px bg-gray-200"></div>
+
+              @for (node of sortedNodes; track node.id; let last = $last) {
+                <div class="relative flex items-start gap-4">
+                  <!-- Dot -->
+                  <div class="absolute -left-4 w-4 h-4 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5"
+                    [ngClass]="node.isOptional
+                      ? 'border-gray-300 bg-white text-gray-400'
+                      : 'border-violet-500 bg-violet-500 text-white'">
+                    {{ node.stopOrder }}
+                  </div>
+
+                  <!-- Card -->
+                  <div class="flex-1 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+                    <div>
+                      <p class="font-medium text-gray-800">{{ warehouseName(node.warehouseId) }}</p>
+                      <div class="flex items-center gap-3 mt-0.5">
+                        <span class="text-xs text-gray-400">{{ warehouseCity(node.warehouseId) }}</span>
+                        @if (node.estimatedOffsetHours) {
+                          <span class="text-xs text-amber-600 flex items-center gap-0.5">
+                            <iconify-icon icon="mdi:clock-outline" style="font-size:12px"></iconify-icon>
+                            +{{ node.estimatedOffsetHours }}h
+                          </span>
+                        }
+                        @if (node.isOptional) {
+                          <span class="text-xs text-gray-400 italic">Opcional</span>
+                        }
+                      </div>
+                    </div>
+                    <button (click)="removeNode(node.id)"
+                      class="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group">
+                      <iconify-icon icon="mdi:trash-can-outline" class="text-gray-300 group-hover:text-red-400" style="font-size:16px"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-center py-8 bg-gray-50 rounded-2xl">
+              <iconify-icon icon="mdi:map-marker-path" class="text-gray-300 text-4xl mb-2 block mx-auto"></iconify-icon>
+              <p class="text-gray-400 text-sm">Sin paradas intermedias</p>
+            </div>
+          }
+
+          <!-- Formulario agregar parada -->
+          @if (addingNode()) {
+            <div class="mt-4 bg-violet-50 rounded-2xl p-5 border border-violet-100" [formGroup]="nodeForm">
+              <p class="text-xs font-semibold text-violet-600 uppercase tracking-widest mb-3">Nueva parada</p>
+
+              @if (errorNode()) {
+                <p class="text-xs text-red-500 mb-3 bg-red-50 px-3 py-2 rounded-lg">{{ errorNode() }}</p>
+              }
+
+              <div class="grid grid-cols-2 gap-3">
+
+                <!-- Almacén -->
+                <div class="col-span-2">
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Almacén <span class="text-red-500">*</span></label>
+                  <div class="relative">
+                    <select formControlName="warehouseId"
+                      class="w-full appearance-none px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 cursor-pointer">
+                      <option value="">Selecciona un almacén</option>
+                      @for (w of warehouses(); track w.id) {
+                        <option [value]="w.id">{{ w.name }} — {{ w.city }}</option>
+                      }
+                    </select>
+                    <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+                  </div>
+                </div>
+
+                <!-- Offset horas -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Horas desde origen</label>
+                  <input formControlName="estimatedOffsetHours" type="number" step="0.5" placeholder="4.5"
+                    class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200" />
+                </div>
+
+                <!-- Opcional -->
+                <div class="flex items-center gap-2 pt-5">
+                  <input formControlName="isOptional" type="checkbox" id="isOptional"
+                    class="w-4 h-4 rounded accent-violet-600 cursor-pointer" />
+                  <label for="isOptional" class="text-sm text-gray-600 cursor-pointer">Parada opcional</label>
+                </div>
+
+              </div>
+
+              <div class="flex justify-end gap-2 mt-4">
+                <button (click)="addingNode.set(false); nodeForm.reset({ isOptional: false })"
+                  class="px-4 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+                  Cancelar
+                </button>
+                <button (click)="submitNode()"
+                  class="px-4 py-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors">
+                  Agregar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (r.notes) {
+          <div class="border-t border-dashed border-gray-200 pt-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Notas</p>
+            <p class="text-gray-600">{{ r.notes }}</p>
+          </div>
+        }
+
+      </div>
+    }
+
+    <div class="px-7 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+      <button (click)="close.emit()"
+        class="px-5 py-2 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>

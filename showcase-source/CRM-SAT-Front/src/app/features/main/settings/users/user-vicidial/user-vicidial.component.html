@@ -1,0 +1,169 @@
+<div *ngIf="!!vicidial" class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialUser">
+      Username del agente en VICIdial
+    </label>
+    <input
+      id="vicidialUser"
+      pInputText
+      [(ngModel)]="vicidial.username"
+      readonly
+      class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+    />
+  </div>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialUserPass">
+      Password de usuario en VICIdial
+    </label>
+
+    <p-inputgroup>
+      <input
+        id="vicidialUserPass"
+        pInputText
+        [(ngModel)]="vicidial.userPass"
+        [type]="showPassUser ? 'text' : 'password'"
+        readonly
+        class="
+                w-full
+                !rounded-tl-full
+                !rounded-bl-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+      />
+      <p-inputgroup-addon>
+        <btn-custom
+          [icon]="showPassUser ? 'lucide:eye-off' : 'lucide:eye'"
+          severity="secondary"
+          (click)="showPassUser = !showPassUser"
+        />
+      </p-inputgroup-addon>
+    </p-inputgroup>
+  </div>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialPhoneLogin">
+      Extensión/teléfono del agente
+    </label>
+    <input
+      id="vicidialPhoneLogin"
+      pInputText
+      [(ngModel)]="vicidial.phoneLogin"
+      readonly
+      class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+    />
+  </div>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialPhonePass">
+      Password del teléfono SIP
+    </label>
+    <p-inputgroup>
+      <input
+        id="vicidialUserPass"
+        pInputText
+        [(ngModel)]="vicidial.phonePass"
+        [type]="showPassPhone ? 'text' : 'password'"
+        readonly
+        class="
+                w-full
+                !rounded-tl-full
+                !rounded-bl-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+      />
+      <p-inputgroup-addon>
+        <btn-custom
+          [icon]="showPassPhone ? 'lucide:eye-off' : 'lucide:eye'"
+          severity="secondary"
+          (click)="showPassPhone = !showPassPhone"
+        />
+      </p-inputgroup-addon>
+    </p-inputgroup>
+  </div>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialUserLevel">
+      Nivel de usuario (1=agente, 9=admin)
+    </label>
+    <input
+      id="vicidialUserLevel"
+      pInputText
+      [(ngModel)]="vicidial.userLevel"
+      readonly
+      class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+    />
+  </div>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-medium" for="vicidialUserGroup">
+      Grupo del usuario (ej: AGENTS)
+    </label>
+    <input
+      id="vicidialUserGroup"
+      pInputText
+      [(ngModel)]="vicidial.userGroup"
+      readonly
+      class="
+                w-full
+                !rounded-full
+                !text-sm
+                !h-10
+                min-w-72
+                bg-cuaternario
+                !border
+                !border-transparent
+                focus:!border-[#dad9dd]
+                transition-all
+                duration-200
+              "
+    />
+  </div>
+</div>

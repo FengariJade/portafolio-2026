@@ -1,0 +1,358 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+  (click)="close.emit()">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-violet-600 to-violet-500 px-7 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <iconify-icon icon="mdi:file-document-outline" class="text-white" style="font-size:24px"></iconify-icon>
+        <div>
+          <p class="text-violet-200 text-xs uppercase tracking-widest">Manifiesto de despacho</p>
+          <p class="text-white font-bold text-lg font-mono leading-tight">{{ manifest()?.manifestCode ?? '...' }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        @if (manifest()) {
+          <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="manifest()!.status | manifestStatus:'class'">
+            {{ manifest()!.status | manifestStatus }}
+          </span>
+        }
+        <button (click)="close.emit()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center">
+          <iconify-icon icon="mdi:close" class="text-white"></iconify-icon>
+        </button>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="flex items-center justify-center py-16">
+        <iconify-icon icon="mdi:loading" class="text-violet-400 animate-spin" style="font-size:32px"></iconify-icon>
+      </div>
+    }
+
+    @if (!loading() && manifest(); as m) {
+      <div class="overflow-y-auto flex-1 px-7 py-6 space-y-6 text-sm">
+
+        <!-- Info general -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-gray-50 rounded-2xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Chofer</p>
+            <p class="font-semibold text-gray-800">{{ driver()?.firstName }} {{ driver()?.lastName }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-2xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Camión</p>
+            <p class="font-semibold text-gray-800 font-mono">{{ truck()?.licensePlate ?? '—' }}</p>
+            <p class="text-xs text-gray-400">{{ truck()?.brand }} {{ truck()?.model }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-2xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Ruta</p>
+            <p class="font-semibold text-gray-800">{{ route()?.name ?? '—' }}</p>
+            <p class="text-xs text-gray-400 font-mono">{{ route()?.code }}</p>
+          </div>
+        </div>
+
+        <!-- ── FLOTEXS-55: Barras de capacidad ──────────── -->
+        @if (truck()) {
+          <div class="bg-gray-50 rounded-2xl p-5">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Capacidad del camión</p>
+            <div class="space-y-4">
+
+              <!-- Peso -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-sm text-gray-600 flex items-center gap-1.5">
+                    <iconify-icon icon="mdi:weight-kilogram" class="text-gray-400" style="font-size:16px"></iconify-icon>
+                    Peso
+                  </span>
+                  <span class="text-sm font-semibold" [ngClass]="weightPct > 90 ? 'text-red-600' : weightPct > 70 ? 'text-amber-600' : 'text-gray-700'">
+                    {{ m.totalWeightKg }} / {{ truck()!.maxWeightKg }} kg
+                    <span class="text-xs font-normal text-gray-400">({{ weightPct | number:'1.0-0' }}%)</span>
+                  </span>
+                </div>
+                <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-3 rounded-full transition-all duration-500"
+                    [style.width.%]="weightPct"
+                    [ngClass]="weightPct > 90 ? 'bg-red-500' : weightPct > 70 ? 'bg-amber-500' : 'bg-violet-500'">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Volumen -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-sm text-gray-600 flex items-center gap-1.5">
+                    <iconify-icon icon="mdi:cube-outline" class="text-gray-400" style="font-size:16px"></iconify-icon>
+                    Volumen
+                  </span>
+                  <span class="text-sm font-semibold" [ngClass]="volumePct > 90 ? 'text-red-600' : volumePct > 70 ? 'text-amber-600' : 'text-gray-700'">
+                    {{ m.totalVolumeM3 }} / {{ truck()!.maxVolumeM3 }} m³
+                    <span class="text-xs font-normal text-gray-400">({{ volumePct | number:'1.0-0' }}%)</span>
+                  </span>
+                </div>
+                <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-3 rounded-full transition-all duration-500"
+                    [style.width.%]="volumePct"
+                    [ngClass]="volumePct > 90 ? 'bg-red-500' : volumePct > 70 ? 'bg-amber-500' : 'bg-emerald-500'">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
+        <!-- Tabs -->
+        <div class="border-b border-gray-100">
+          <div class="flex gap-1">
+            <button (click)="activeTab.set('packages')"
+              class="px-5 py-2.5 text-sm font-medium rounded-t-xl transition-colors"
+              [ngClass]="activeTab() === 'packages' ? 'bg-violet-50 text-violet-700 border-b-2 border-violet-500' : 'text-gray-500 hover:text-gray-700'">
+              <iconify-icon icon="mdi:package-variant" class="mr-1.5 inline" style="font-size:16px"></iconify-icon>
+              Paquetes ({{ m.packages?.length ?? 0 }})
+            </button>
+            <button (click)="activeTab.set('guides')"
+              class="px-5 py-2.5 text-sm font-medium rounded-t-xl transition-colors"
+              [ngClass]="activeTab() === 'guides' ? 'bg-violet-50 text-violet-700 border-b-2 border-violet-500' : 'text-gray-500 hover:text-gray-700'">
+              <iconify-icon icon="mdi:file-certificate-outline" class="mr-1.5 inline" style="font-size:16px"></iconify-icon>
+              Guías legales ({{ m.remissionGuides?.length ?? 0 }})
+            </button>
+          </div>
+        </div>
+
+        <!-- ── FLOTEXS-55: Tab Paquetes ──────────────────── -->
+        @if (activeTab() === 'packages') {
+          <div class="space-y-4">
+
+            <!-- Buscar paquete -->
+            <div class="flex gap-2">
+              <div class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5">
+                <iconify-icon icon="mdi:barcode-scan" class="text-gray-400 shrink-0" style="font-size:18px"></iconify-icon>
+                <input type="text" placeholder="Código de paquete o tracking..."
+                  [ngModel]="searchPackage()" (ngModelChange)="searchPackage.set($event)"
+                  (keyup.enter)="searchByCode()"
+                  class="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400" />
+              </div>
+              <button (click)="searchByCode()" [disabled]="searchLoading()"
+                class="px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-1.5">
+                @if (searchLoading()) { <iconify-icon icon="mdi:loading" class="animate-spin" style="font-size:16px"></iconify-icon> }
+                Buscar
+              </button>
+            </div>
+
+            @if (searchError()) {
+              <p class="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{{ searchError() }}</p>
+            }
+
+            <!-- Paquete encontrado -->
+            @if (foundPackage(); as pkg) {
+              <div class="flex items-center justify-between bg-violet-50 border border-violet-200 rounded-xl px-4 py-3">
+                <div>
+                  <p class="font-mono font-semibold text-gray-800">{{ pkg.packageCode }}</p>
+                  <p class="text-xs text-gray-500">{{ pkg.senderName }} → {{ pkg.receiverName }} · {{ pkg.weightKg }} kg</p>
+                </div>
+                <button (click)="addPackage()"
+                  class="px-4 py-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors flex items-center gap-1.5">
+                  <iconify-icon icon="mdi:plus" style="font-size:14px"></iconify-icon>
+                  Agregar
+                </button>
+              </div>
+            }
+
+            <!-- Lista de paquetes -->
+            @if (m.packages && m.packages.length > 0) {
+              <div class="space-y-2">
+                @for (mp of m.packages; track mp.id) {
+                  <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                    <div class="flex items-center gap-3">
+                      <iconify-icon icon="mdi:package-variant-closed" class="text-violet-400" style="font-size:20px"></iconify-icon>
+                      <div>
+                        <p class="font-mono font-semibold text-gray-800">{{ mp.packageCode }}</p>
+                        <p class="text-xs text-gray-400">
+                          {{ mp.trackingCode }}
+                          @if (mp.weightKg) { · {{ mp.weightKg }} kg }
+                        </p>
+                      </div>
+                    </div>
+                    <button (click)="removePackage(mp)"
+                      class="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group">
+                      <iconify-icon icon="mdi:trash-can-outline" class="text-gray-300 group-hover:text-red-400" style="font-size:16px"></iconify-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-10 bg-gray-50 rounded-2xl">
+                <iconify-icon icon="mdi:package-variant-closed" class="text-gray-300 text-4xl mb-2 block mx-auto"></iconify-icon>
+                <p class="text-gray-400 text-sm">Sin paquetes asignados</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── FLOTEXS-59: Tab Guías legales ─────────────── -->
+        @if (activeTab() === 'guides') {
+          <div class="space-y-4">
+
+            <div class="flex justify-end">
+              <button (click)="addingGuide.set(!addingGuide())"
+                class="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-xl transition-colors">
+                <iconify-icon icon="mdi:plus" style="font-size:14px"></iconify-icon>
+                Agregar guía
+              </button>
+            </div>
+
+            <!-- Formulario guía -->
+            @if (addingGuide()) {
+              <div class="bg-violet-50 rounded-2xl p-5 border border-violet-100" [formGroup]="guideForm">
+                <p class="text-xs font-semibold text-violet-600 uppercase tracking-widest mb-4">Nueva guía de remisión</p>
+
+                @if (errorGuide()) {
+                  <p class="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg mb-3">{{ errorGuide() }}</p>
+                }
+
+                <div class="grid grid-cols-2 gap-3">
+
+                  <!-- Paquete -->
+                  <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Paquete <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <select formControlName="packageId"
+                        class="w-full appearance-none px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 cursor-pointer">
+                        <option value="">Selecciona un paquete del manifiesto</option>
+                        @for (mp of m.packages; track mp.id) {
+                          <option [value]="mp.packageId ?? mp.id">{{ mp.packageCode }}</option>
+                        }
+                      </select>
+                      <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+                    </div>
+                  </div>
+
+                  <!-- Número de guía -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">N° de guía <span class="text-red-500">*</span></label>
+                    <input formControlName="guideNumber" type="text" placeholder="001-000012345"
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm font-mono outline-none focus:ring-2 focus:ring-violet-200" />
+                  </div>
+
+                  <!-- Tipo -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Tipo <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <select formControlName="guideType"
+                        class="w-full appearance-none px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 cursor-pointer">
+                        <option value="STANDARD">Estándar</option>
+                        <option value="CUSTOMS_AUTHORIZATION">Autorización Aduanas</option>
+                        <option value="HAZARDOUS_MATERIALS">Mat. Peligrosos</option>
+                        <option value="PHARMACEUTICAL">Farmacéutico</option>
+                        <option value="SPECIAL_CARGO">Carga Especial</option>
+                      </select>
+                      <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></iconify-icon>
+                    </div>
+                  </div>
+
+                  <!-- Entidad emisora -->
+                  <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Entidad emisora <span class="text-red-500">*</span></label>
+                    <input formControlName="issuingAuthority" type="text" placeholder="SUNAT, DIGEMID..."
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200" />
+                  </div>
+
+                  <!-- Fecha emisión -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Fecha emisión <span class="text-red-500">*</span></label>
+                    <input formControlName="issuedAt" type="date"
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200" />
+                  </div>
+
+                  <!-- Fecha vencimiento -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Fecha vencimiento</label>
+                    <input formControlName="expiresAt" type="date"
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200" />
+                  </div>
+
+                  <!-- URL documento -->
+                  <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">URL del documento</label>
+                    <input formControlName="documentUrl" type="url" placeholder="https://..."
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200" />
+                  </div>
+
+                  <!-- Descripción -->
+                  <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Descripción</label>
+                    <textarea formControlName="description" rows="2"
+                      class="w-full px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-200 resize-none"></textarea>
+                  </div>
+
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <button (click)="addingGuide.set(false); guideForm.reset({ guideType: 'STANDARD' })"
+                    class="px-4 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+                    Cancelar
+                  </button>
+                  <button (click)="submitGuide()"
+                    class="px-4 py-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl">
+                    Registrar guía
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Lista de guías -->
+            @if (m.remissionGuides && m.remissionGuides.length > 0) {
+              <div class="space-y-2">
+                @for (g of m.remissionGuides; track g.id) {
+                  <div class="flex items-start justify-between bg-gray-50 rounded-xl px-4 py-3">
+                    <div class="flex items-start gap-3">
+                      <iconify-icon icon="mdi:file-certificate-outline" class="text-violet-400 mt-0.5" style="font-size:20px"></iconify-icon>
+                      <div>
+                        <p class="font-mono font-semibold text-gray-800">{{ g.guideNumber }}</p>
+                        <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <span class="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-md font-medium">
+                            {{ guideTypeLabel[g.guideType] }}
+                          </span>
+                          <span class="text-xs text-gray-400">{{ g.issuingAuthority }}</span>
+                          <span class="text-xs text-gray-400">Emitida: {{ g.issuedAt | date:'dd/MM/yyyy' }}</span>
+                          @if (g.expiresAt) {
+                            <span class="text-xs text-amber-600">Vence: {{ g.expiresAt | date:'dd/MM/yyyy' }}</span>
+                          }
+                        </div>
+                        @if (g.documentUrl) {
+                          <a [href]="g.documentUrl" target="_blank"
+                            class="text-xs text-violet-500 hover:underline mt-0.5 inline-flex items-center gap-1">
+                            <iconify-icon icon="mdi:open-in-new" style="font-size:12px"></iconify-icon>
+                            Ver documento
+                          </a>
+                        }
+                      </div>
+                    </div>
+                    <button (click)="removeGuide(g.id)"
+                      class="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group shrink-0">
+                      <iconify-icon icon="mdi:trash-can-outline" class="text-gray-300 group-hover:text-red-400" style="font-size:16px"></iconify-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-10 bg-gray-50 rounded-2xl">
+                <iconify-icon icon="mdi:file-certificate-outline" class="text-gray-300 text-4xl mb-2 block mx-auto"></iconify-icon>
+                <p class="text-gray-400 text-sm">Sin guías registradas</p>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    }
+
+    <div class="px-7 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+      <button (click)="close.emit()"
+        class="px-5 py-2 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>

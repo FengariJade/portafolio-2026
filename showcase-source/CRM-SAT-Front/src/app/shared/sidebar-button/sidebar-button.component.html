@@ -1,0 +1,95 @@
+<div *ngIf="option" class="grid grid-cols-1 gap-1">
+  <!-- Si el sidebar NO está colapsado -->
+  <ng-container *ngIf="!collapsed; else collapsedView">
+    <a
+      *ngIf="!collapsed"
+      (click)="selectOption(option)"
+      [routerLink]="option.link"
+      [routerLinkActive]="'active'"
+      class="
+        flex items-center gap-3
+        h-12
+        rounded-full
+        bg-cuaternario
+        text-black
+        hover:bg-terciario
+        transition-all
+      "
+      [ngClass]="{
+        'bg-accent-7 text-terciario': option.active
+      }"
+    >
+      <div class="pl-2 w-10 h-10 flex items-center justify-center shrink-0">
+        <iconify-icon
+          [icon]="option.icon"
+          class="text-xl"
+          [attr.color]="option.active ? '#FFFFFF' : '#000000'"
+        />
+      </div>
+
+
+      <span class="text-sm truncate">
+        {{ option.label }}
+      </span>
+    </a>
+
+    <!-- Subitems -->
+    <!-- <div
+      *ngIf="option.items?.length && option.active"
+      class="px-2 flex gap-0.5"
+    >
+      <div class="flex-0">
+        <div class="w-4 h-full flex justify-center">
+          <div class="w-[1px] bg-slate-200 h-full"></div>
+        </div>
+      </div>
+      <div class="w-full grid grid-cols-1 gap-1">
+        @for (item of option.items; track $index) {
+        <div
+          *ngIf="option.expand || isChildRouteActive(item.link)"
+          class="grid grid-cols-1 gap-1"
+        >
+          <a
+            class="flex items-center gap-1 px-3 py-1 rounded-full cursor-pointer transition-all duration-300"
+            [routerLink]="item.link"
+            [routerLinkActive]="'bg-[#ECEBF0] text-[#365f95] font-medium'"
+            [routerLinkActiveOptions]="{ exact: false }"
+            [pTooltip]="item.label"
+            [ngClass]="{
+              'text-[#000]': isChildRouteActive(item.link),
+              'text-white hover:bg-[#dcdbdf] hover:text-[#000]':
+                !isChildRouteActive(item.link)
+            }"
+          >
+            <div *ngIf="item.icon" class="grow-0">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <iconify-icon [icon]="item.icon" class="text-lg text-inherit" />
+              </div>
+            </div>
+            <div class="grow">
+              <div class="grid grid-cols-1">
+                <p class="text-sm truncate capitalize">{{ item.label }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        }
+      </div>
+    </div> -->
+  </ng-container>
+
+  <!-- Vista colapsada -->
+  <ng-template #collapsedView>
+    <a
+      class="w-12 h-12 flex items-center justify-center rounded-full text-white hover:bg-terciario hover:text-[#365f95] transition-all duration-300 mx-auto"
+      [routerLink]="option.link"
+      [routerLinkActive]="'bg-terciario text-[#365f95]'"
+      [pTooltip]="option.label"
+      tooltipPosition="right"
+      tooltipStyleClass="!text-xs !font-normal !p-0 capitalize"
+    >
+      <!-- ¡AQUÍ va directamente el icono centrado! -->
+      <iconify-icon [icon]="option.icon" class="text-xl" />
+    </a>
+  </ng-template>
+</div>

@@ -1,0 +1,51 @@
+<form [formGroup]="formData" class="grid grid-cols-1 gap-6">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium" for="displayNameUser">
+        Campaña activa {{ campaignId }}
+      </label>
+    </div>
+    <!-- <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium" for="idPhoneCode">
+        Dial Código
+        <span class="text-xs"
+          >(Esto es por lo general un 1 en el EE.UU.-Canada)</span
+        >
+      </label>
+      <input
+        id="idPhoneCode"
+        pInputText
+        formControlName="phoneCode"
+        pKeyFilter="numeric"
+      />
+    </div> -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium" for="idPhoneNumber">
+        Número de teléfono <span class="text-xs"> (solo dígitos)</span>
+      </label>
+      <input
+        id="idPhoneNumber"
+        pInputText
+        formControlName="phoneNumber"
+        pKeyFilter="numeric"
+      />
+    </div>
+  </div>
+  <div class="flex justify-end gap-4">
+    <btn-custom
+      label="Cancelar"
+      severity="danger"
+      icon="ooui:cancel"
+      [text]="false"
+      (click)="onCancel()"
+    />
+    <btn-custom
+      [disabled]="formData.invalid"
+      label="Marcar"
+      severity="primary"
+      icon="mingcute:phone-fill"
+      [text]="false"
+      (click)="onSubmit()"
+    />
+  </div>
+</form>

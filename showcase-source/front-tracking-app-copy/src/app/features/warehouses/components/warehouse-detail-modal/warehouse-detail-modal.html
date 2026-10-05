@@ -1,0 +1,132 @@
+   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      (click)="close.emit()">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
+        (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-violet-600 to-violet-500 px-7 py-5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="mdi:warehouse" class="text-white" style="font-size:24px"></iconify-icon>
+            <div>
+              <p class="text-violet-200 text-xs uppercase tracking-widest">Detalle del almacén</p>
+              <p class="text-white font-bold text-lg leading-tight">{{ w()?.name ?? '...' }}</p>
+            </div>
+          </div>
+          <button (click)="close.emit()"
+            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+            <iconify-icon icon="mdi:close" class="text-white"></iconify-icon>
+          </button>
+        </div>
+
+        @if (loading()) {
+          <div class="flex items-center justify-center py-16">
+            <iconify-icon icon="mdi:loading" class="text-violet-400 animate-spin" style="font-size:32px"></iconify-icon>
+          </div>
+        }
+
+        @if (!loading() && w(); as wh) {
+          <div class="px-7 py-6 space-y-4 text-sm">
+
+            <!-- Código, tipo y estado -->
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-gray-100 text-gray-700 font-mono font-bold rounded-lg text-xs">
+                {{ wh.code }}
+              </span>
+              <span class="px-3 py-1 rounded-lg text-xs font-semibold"
+                [ngClass]="wh.warehouseType | warehouseType:'class'">
+                {{ wh.warehouseType | warehouseType }}
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="(wh.isActive ? 'ACTIVE' : 'INACTIVE') | warehouseType:'statusClass'">
+                {{ wh.isActive ? 'Activo' : 'Inactivo' }}
+              </span>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Ciudad</p>
+                <p class="text-gray-800 font-medium">{{ wh.city }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Departamento</p>
+                <p class="text-gray-800 font-medium">{{ wh.state }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">País</p>
+                <p class="text-gray-800 font-medium">{{ wh.country }}</p>
+              </div>
+              @if (wh.postalCode) {
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Código postal</p>
+                  <p class="text-gray-800 font-mono">{{ wh.postalCode }}</p>
+                </div>
+              }
+              <div class="col-span-2">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Dirección</p>
+                <p class="text-gray-800">{{ wh.address }}</p>
+              </div>
+              @if (wh.latitude && wh.longitude) {
+                <div class="col-span-2">
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Coordenadas</p>
+                  <p class="text-gray-800 font-mono text-xs">{{ wh.latitude }}, {{ wh.longitude }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Capacidad -->
+            @if (wh.maxCapacityKg || wh.maxCapacityM3) {
+              <div class="border-t border-dashed border-gray-200 pt-4 grid grid-cols-2 gap-4">
+                @if (wh.maxCapacityKg) {
+                  <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Capacidad máx.</p>
+                    <p class="text-gray-800 font-medium">{{ wh.maxCapacityKg }} kg</p>
+                  </div>
+                }
+                @if (wh.maxCapacityM3) {
+                  <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Capacidad vol.</p>
+                    <p class="text-gray-800 font-medium">{{ wh.maxCapacityM3 }} m³</p>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Responsable -->
+            @if (wh.managerName) {
+              <div class="border-t border-dashed border-gray-200 pt-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Responsable</p>
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-sm font-bold shrink-0">
+                    {{ wh.managerName[0] }}
+                  </div>
+                  <div>
+                    <p class="text-gray-800 font-medium">{{ wh.managerName }}</p>
+                    <p class="text-xs text-gray-400">
+                      {{ wh.phone }}{{ wh.phone && wh.email ? ' · ' : '' }}{{ wh.email }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Notas -->
+            @if (wh.notes) {
+              <div class="border-t border-dashed border-gray-200 pt-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Notas</p>
+                <p class="text-gray-600 text-sm">{{ wh.notes }}</p>
+              </div>
+            }
+
+          </div>
+        }
+
+        <div class="px-7 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+          <button (click)="close.emit()"
+            class="px-5 py-2 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors">
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>

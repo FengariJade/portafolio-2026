@@ -1,0 +1,226 @@
+<header
+  class="w-full fixed top-0 left-0 z-50
+         flex justify-center
+         pt-4 md:pt-8"
+>
+  <div
+    class="glass-header w-full max-w-7xl mx-4 md:mx-6
+           px-4 md:px-10
+           py-4 md:py-6
+           flex items-center justify-between"
+  >
+
+    <!-- LOGO -->
+    <div class="flex items-center gap-3 shrink-0">
+      <span class="font-heavitas text-2xl md:text-4xl text-negro tracking-wider">
+        NOUZ
+      </span>
+
+      <img
+        src="/images/bot/bot.png"
+        alt="Nouz Bot"
+        class="w-9 h-9 md:w-12 md:h-12 object-contain"
+      />
+    </div>
+
+    <!-- NAV DESKTOP -->
+    <nav class="hidden md:flex flex-1 justify-center text-grisC">
+      <div class="flex items-center gap-10">
+
+        <button class="nav-link text-base text-grisC">
+          Funciones
+        </button>
+
+        <button class="nav-link text-base text-grisC">
+          Soporte
+        </button>
+
+        <button class="nav-link text-base text-grisC">
+          Precio
+        </button>
+
+        <button
+          *ngIf="!isLoggedIn"
+          class="nav-link text-base text-grisC"
+          (click)="openAuthModal()"
+        >
+          Iniciar sesión
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- DERECHA DESKTOP -->
+    <div class="hidden md:flex items-center gap-6 shrink-0">
+
+      <!-- CTA -->
+      <button
+        *ngIf="!isLoggedIn"
+        class="bg-violetaA text-blanco
+               px-8 py-3 rounded-full
+               font-poppins text-base
+               shadow-xl
+               hover:bg-violetaA/90
+               transition-all"
+      >
+        Probar gratis
+      </button>
+
+      <!-- PERFIL -->
+      <ng-container *ngIf="isLoggedIn">
+        <div class="relative">
+
+          <button
+            class="flex items-center gap-3 px-4 py-2 rounded-full
+                   bg-violetaA hover:bg-violetaA/90
+                   transition shadow-md"
+            (click)="toggleProfileMenu()"
+          >
+            <div
+              class="w-9 h-9 rounded-full bg-white
+                     flex items-center justify-center
+                     text-violetaA font-bold text-sm"
+            >
+              {{ user.name.charAt(0) }}
+            </div>
+
+            <span class="text-white text-sm font-medium">
+              {{ user.name }}
+            </span>
+
+            <svg class="w-4 h-4 text-white opacity-80" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- MENU PERFIL -->
+          <div
+            *ngIf="showProfileMenu"
+            class="absolute right-0 mt-3 w-52
+                   bg-white rounded-2xl shadow-2xl
+                   py-2 border border-violetaA/10"
+          >
+            <button
+              class="w-full text-left px-5 py-2 text-sm
+                     text-gray-700 hover:bg-[#3535EF]
+                     hover:text-white transition"
+              routerLink="/profile"
+              (click)="showProfileMenu = false"
+            >
+              Mi perfil
+            </button>
+
+            <button
+              class="w-full text-left px-5 py-2 text-sm
+                     text-gray-700 hover:bg-[#3535EF]
+                     hover:text-white transition"
+            >
+              Configuración
+            </button>
+
+            <div class="my-2 h-px bg-violetaA/10"></div>
+
+            <button
+              class="w-full text-left px-5 py-2 text-sm
+                     text-violetaA font-medium
+                     hover:bg-[#3535EF] hover:text-white transition"
+              (click)="logout()"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- BOTÓN MOBILE -->
+    <button
+      class="md:hidden text-blanco"
+      (click)="toggleMobileMenu()"
+    >
+      <svg class="w-7 h-7" fill="none" stroke="currentColor"
+           viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+
+<!-- MODAL AUTH -->
+<app-auth-modal
+  *ngIf="showAuthModal"
+  (close)="closeAuthModal()"
+  (loginSuccess)="onLoginSuccess()"
+></app-auth-modal>
+
+<!-- OVERLAY MOBILE -->
+<div
+  *ngIf="showMobileMenu"
+  class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+  (click)="closeMobileMenu()"
+></div>
+
+<!-- PANEL MOBILE -->
+<div
+  *ngIf="showMobileMenu"
+  class="fixed top-30 left-4 right-4 z-50
+
+         bg-white/10 backdrop-blur-xl
+         border border-white/20
+
+         rounded-3xl
+         shadow-[0_20px_60px_-15px_rgba(53,53,239,0.45)]
+
+         px-6 py-6 space-y-5
+         text-blanco"
+>
+
+  <button
+    class="block w-full text-left text-lg font-medium
+           hover:text-violetaA transition-colors"
+  >
+    Funciones
+  </button>
+
+  <button
+    class="block w-full text-left text-lg font-medium
+           hover:text-violetaA transition-colors"
+  >
+    Soporte
+  </button>
+
+  <button
+    class="block w-full text-left text-lg font-medium
+           hover:text-violetaA transition-colors"
+  >
+    Precio
+  </button>
+
+  <button
+    *ngIf="!isLoggedIn"
+    class="block w-full text-left text-lg font-medium
+           hover:text-violetaA transition-colors"
+    (click)="openAuthModal(); closeMobileMenu()"
+  >
+    Iniciar sesión
+  </button>
+
+  <button
+    *ngIf="!isLoggedIn"
+    class="w-full mt-4
+           bg-violetaA text-blanco
+           py-3 rounded-full font-medium
+           shadow-lg
+           hover:bg-violetaA/90
+           transition-all"
+  >
+    Probar gratis
+  </button>
+
+</div>

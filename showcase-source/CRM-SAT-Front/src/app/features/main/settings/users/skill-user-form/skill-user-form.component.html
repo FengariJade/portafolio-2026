@@ -1,0 +1,104 @@
+<div class="grid grid-cols-1 gap-6">
+  <div class="grid grid-cols-1 gap-2">
+    <div class="flex justify-center items-center gap-2">
+      <p-multiselect
+        [options]="skills"
+        [(ngModel)]="selectedSkills"
+        optionLabel="name"
+        placeholder="Seleccionar habilidades"
+        styleClass="w-64 !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+        [maxSelectedLabels]="3"
+        appendTo="body"
+      />
+  
+      <button
+        pButton
+        type="button"
+        [disabled]="!selectedSkills.length"
+        (click)="assign()"
+        class="
+        bg-cuaternario
+        !text-black
+        hover:bg-accent-7
+        hover:!text-white
+        !rounded-full
+        transition-all
+        duration-200
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2"
+          >
+            <iconify-icon
+              icon="lucide:plus"
+              class="text-lg text-inherit"
+            ></iconify-icon>
+
+            <span class="font-medium">
+              Guardar
+            </span>
+      </button>
+    </div>
+    <p-table [value]="assignmentList" styleClass="table-header-light ">
+      <!-- <ng-template #header>
+        <tr>
+          <th>Nombre</th>
+          <th class="w-12">Actions</th>
+        </tr>
+      </ng-template> -->
+      <ng-template #body let-item>
+        <tr>
+          <td>
+            <div class="flex justify-between items-center gap-2">
+              <div class="flex flex-col">
+                <h5 class="text-sm">
+                  {{ item.name }}
+                </h5>
+              </div>
+            </div>
+          </td>
+          <td class="w-24">
+            <p-rating [(ngModel)]="item.score" />
+          </td>
+          <td class="w-12">
+            <div class="flex items-center">
+              <btn-delete (click)="remove(item)" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="flex justify-end">
+   
+    <button
+			pButton
+			type="button"
+      [loading]="loading"
+			(click)="onSubmit()"
+			class="
+			bg-cuaternario
+			!text-black
+			hover:bg-accent-7
+			hover:!text-white
+			!rounded-full
+			transition-all
+			duration-200
+			flex
+			items-center
+			gap-2
+			px-4
+			py-2"
+        >
+          <iconify-icon
+            icon="mdi:plus-circle-outline"
+            class="text-lg text-inherit"
+          ></iconify-icon>
+
+          <span class="font-medium">
+            Actualizar Hebilidades
+          </span>
+		</button>
+  </div>
+</div>

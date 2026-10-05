@@ -1,0 +1,45 @@
+<div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+  (click)="close.emit()">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="px-8 pt-8 pb-6 flex flex-col items-center text-center">
+      <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500 text-3xl"></iconify-icon>
+      </div>
+      <h3 class="text-xl font-bold text-gray-800">Eliminar conductor</h3>
+      <p class="text-sm text-gray-400 mt-2">
+        ¿Estás seguro de que deseas eliminar a
+        <span class="font-semibold text-gray-700">{{ driverName() }}</span>?
+        Esta acción no se puede deshacer.
+      </p>
+    </div>
+
+    @if (error()) {
+      <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-6 py-3 rounded-lg mx-8 mb-2 text-center">
+        <span>⚠️</span><span>{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Footer -->
+    <div class="px-8 pb-8 flex gap-3">
+      <button (click)="close.emit()"
+        [disabled]="deleting()"
+        class="flex-1 px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all disabled:opacity-60">
+        Cancelar
+      </button>
+      <button (click)="confirm()"
+        [disabled]="deleting()"
+        class="flex-1 px-6 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2">
+        @if (deleting()) {
+          <iconify-icon icon="mdi:loading" class="animate-spin text-base"></iconify-icon>
+          Eliminando...
+        } @else {
+          Sí, eliminar
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

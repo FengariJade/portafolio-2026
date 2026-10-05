@@ -1,0 +1,520 @@
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  <!-- Control de Llamada -->
+  <div class="grid grid-cols-1 gap-4">
+    <p-card styleClass="custom-card">
+      <ng-template #header>
+        <div class="!bg-gradient-to-r from-[var(--sat-Accent)] to-[var(--sat-Primario)] pt-3 grid grid-cols-1 gap-2 rounded-tl-[30px] rounded-tr-[30px]">
+          <div class="px-5">
+            <h4 class="text-xl font-bold text-gray-800">
+              Registro de atención
+            </h4>
+            <p class="text-xs text-gray-600">
+              Registra el resultado de la atención
+            </p>
+          </div>
+          <div class="w-full border-t border-slate-300"></div>
+        </div>
+      </ng-template>
+      <div class="grid grid-cols-1">
+        <form [formGroup]="formDataAtencion" class="grid grid-cols-1 gap-6">
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium" for="nameRole">
+                Tipo de Consulta: <span class="text-xs">*</span>
+              </label>
+              <p-select
+                id="roleuserId"
+                [options]="consultTypeList"
+                optionLabel="label"
+                optionValue="code"
+                formControlName="consultTypeCode"
+                placeholder="Seleccione..."
+                styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+                appendTo="body"
+                [filter]="true"
+              >
+                <ng-template #footer>
+                  <div class="p-0">
+                    <p-button
+                      label="Añadir nuevo"
+                      fluid
+                      severity="primary"
+                      size="small"
+                      styleClass="p-button-sm"
+                      (click)="newConsultType()"
+                    >
+                      <iconify-icon
+                        icon="mdi:plus-circle-outline"
+                        pButtonIcon
+                      />
+                    </p-button>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="tipDoc">
+                  Tipo de Documento: <span class="text-xs">*</span>
+                </label>
+                <p-select
+                  id="roleuserId"
+                  [options]="typeIdeDocList"
+                  optionLabel="code"
+                  optionValue="code"
+                  formControlName="tipDoc"
+                  styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+                  panelStyleClass="
+                    [&_.p-datepicker-header]:bg-cuaternario
+                    [&_.p-datepicker-header]:!border-none
+                    [&_.p-datepicker-header]:!rounded-t-[30px]
+
+                    bg-cuaternario
+                    !rounded-[30px]
+                    !border
+                    !border-transparent
+                    p-3
+
+                    [&_.p-datepicker-calendar_td>span]:!rounded-full
+
+                    [&_.p-datepicker-calendar_td>span:hover]:!bg-gray-300
+                    [&_.p-datepicker-calendar_td>span:hover]:!text-black
+
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border-black
+
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!bg-black
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!text-white
+                  "
+                  placeholder="Seleccione..."
+                  appendTo="body"
+                />
+                <div
+                  *ngIf="
+                    formDataAtencion.controls.tipDoc.invalid &&
+                    formDataAtencion.controls.tipDoc.touched
+                  "
+                >
+                  <small
+                    *ngIf="formDataAtencion.controls.tipDoc.errors?.['required']"
+                    >El tipo de documento es requerido.</small
+                  >
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="docIde">
+                  N° documento: <span class="text-xs">*</span>
+                </label>
+                <input 
+                  id="docIde" 
+                  pInputText 
+                  formControlName="docIde" 
+                  placeholder="Ingrese su Documento"
+                  class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    transition-all
+                    duration-200
+                  "
+                  />
+                <div
+                  *ngIf="
+                    formDataAtencion.controls.docIde.invalid &&
+                    formDataAtencion.controls.docIde.touched
+                  "
+                >
+                  <small
+                    *ngIf="formDataAtencion.controls.docIde.errors?.['required']"
+                    >El N° documento es requerido.</small
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium" for="name">
+                Nombre completo <span class="text-xs">*</span>
+              </label>
+              <input 
+                id="name" 
+                pInputText 
+                formControlName="name" 
+                placeholder="Ingrese su nombre completo"
+                class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    transition-all
+                    duration-200
+                "
+              />
+              <div
+                *ngIf="
+                  formDataAtencion.controls.name.invalid &&
+                  formDataAtencion.controls.name.touched
+                "
+              >
+                <small
+                  *ngIf="formDataAtencion.controls.name.errors?.['required']"
+                  >El nombre es requerido.</small
+                >
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="contactType">
+                  Tipo de contacto: <span class="text-xs">*</span>
+                </label>
+                <p-select
+                  id="contactType"
+                  [options]="typeContactList"
+                  optionLabel="name"
+                  optionValue="code"
+                  formControlName="contactType"
+                  placeholder="Seleccione..."
+                  appendTo="body"
+                  styleClass="w-full !rounded-[30px] focus:ring-gray-300 bg-cuaternario"
+                  panelStyleClass="
+                    [&_.p-datepicker-header]:bg-cuaternario
+                    [&_.p-datepicker-header]:!border-none
+                    [&_.p-datepicker-header]:!rounded-t-[30px]
+
+                    bg-cuaternario
+                    !rounded-[30px]
+                    !border
+                    !border-transparent
+                    p-3
+
+                    [&_.p-datepicker-calendar_td>span]:!rounded-full
+
+                    [&_.p-datepicker-calendar_td>span:hover]:!bg-gray-300
+                    [&_.p-datepicker-calendar_td>span:hover]:!text-black
+
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border-black
+
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!bg-black
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!text-white
+                  "
+                />
+                <div
+                  *ngIf="
+                    formDataAtencion.controls.contactType.invalid &&
+                    formDataAtencion.controls.contactType.touched
+                  "
+                >
+                  <small
+                    *ngIf="formDataAtencion.controls.contactType.errors?.['required']"
+                    >El tipo de contacto es requerido.</small
+                  >
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="contact">
+                  Contacto: <span class="text-xs">*</span>
+                </label>
+                <input 
+                id="contact" 
+                pInputText 
+                formControlName="contact" 
+                placeholder="Ingrese su Contacto"
+                class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    transition-all
+                    duration-200
+                "
+                />
+                <div
+                  *ngIf="
+                    formDataAtencion.controls.contact.invalid &&
+                    formDataAtencion.controls.contact.touched
+                  "
+                >
+                  <small
+                    *ngIf="formDataAtencion.controls.contact.errors?.['required']"
+                    >El contacto es requerido.</small
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium" for="detail">
+                Detalle de la atención:
+              </label>
+              <textarea
+                id="detail"
+                rows="2"
+                cols="30"
+                pTextarea
+                formControlName="detail"
+                placeholder="Ingrese el Detalle"
+                class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    transition-all
+                    duration-200
+                "
+              ></textarea>
+            </div>
+          </div>
+          <!-- Sección de Recordatorio (fuera del formDataAtencion) -->
+          <div class="flex flex-col gap-4">
+            <!-- Checkbox para habilitar recordatorio -->
+            <div class="flex items-center gap-3">
+              <!-- <p-checkbox
+                inputId="enableReminder"
+                [(ngModel)]="enableReminder"
+              /> -->
+              <p-checkbox
+                [(ngModel)]="enableReminder"
+                inputId="pauseCall"
+                binary="true"
+                [ngModelOptions]="{ standalone: true }"
+              >
+              </p-checkbox>
+              <label
+                for="enableReminder"
+                class="text-sm font-medium text-gray-700 cursor-pointer mt-1"
+              >
+                Establecer recordatorio
+              </label>
+            </div>
+
+            <!-- Formulario de recordatorio separado -->
+            <form
+              *ngIf="enableReminder"
+              [formGroup]="formReminder"
+              class="flex flex-col gap-4 bg-gray-50 rounded-xl"
+            >
+              <div
+                class="flex items-center gap-2 pb-2 border-b border-gray-200"
+              >
+                <iconify-icon
+                  icon="mdi:bell-ring-outline"
+                  width="20"
+                  class="text-[var(--sat-principal)]"
+                ></iconify-icon>
+                <span class="text-sm font-semibold text-gray-700"
+                  >Datos del recordatorio</span
+                >
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="reminderName">
+                  Nombre del recordatorio:
+                  <span class="text-xs text-rose-500">*</span>
+                </label>
+                <input
+                  id="reminderName"
+                  pInputText
+                  formControlName="name"
+                  placeholder="Ej: Llamar al cliente"
+                  class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    transition-all
+                    duration-200
+                  "
+                />
+                <div
+                  *ngIf="
+                    formReminder.controls.name.invalid &&
+                    formReminder.controls.name.touched
+                  "
+                >
+                  <small
+                    class="text-rose-500"
+                    *ngIf="formReminder.controls.name.errors?.['required']"
+                  >
+                    El nombre del recordatorio es requerido.
+                  </small>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="reminderDescription">
+                  Descripción:
+                </label>
+                <textarea
+                  id="reminderDescription"
+                  pTextarea
+                  formControlName="description"
+                  placeholder="Detalles adicionales del recordatorio..."
+                  rows="1"
+                  class="
+                    w-full
+                    !rounded-full
+                    !text-sm
+                    !h-10
+                    min-w-72
+                    bg-cuaternario
+                    !border
+                    !border-transparent
+                    focus:!border-[#dad9dd]
+                    focus:!shadow-none
+                    transition-all
+                    duration-200
+                    px-4
+                    resize-none
+                  "
+                ></textarea>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="reminderAt">
+                  Fecha y hora: <span class="text-xs text-rose-500">*</span>
+                </label>
+                <p-datepicker
+                  id="reminderAt"
+                  formControlName="reminderAt"
+                  [showTime]="true"
+                  [showIcon]="true"
+                  [minDate]="minDate"
+                  dateFormat="dd/mm/yy"
+                  hourFormat="12"
+                  placeholder="Seleccione fecha y hora"
+                  appendTo="body"
+                  styleClass="
+                    [&_.p-inputtext]:!rounded-tl-[30px]
+                    [&_.p-inputtext]:!rounded-bl-[30px]
+                    [&_.p-inputtext]:!rounded-tr-none
+                    [&_.p-inputtext]:!rounded-br-none
+                    [&_.p-inputtext]:!w-full
+                    [&_.p-inputtext]:focus:ring-gray-300 
+                    [&_.p-inputtext]:bg-cuaternario
+                  "
+                  panelStyleClass="
+                    [&_.p-datepicker-header]:bg-cuaternario
+                    [&_.p-datepicker-header]:!border-none
+                    [&_.p-datepicker-header]:!rounded-t-[30px]
+
+                    bg-cuaternario
+                    !rounded-[30px]
+                    !border
+                    !border-transparent
+                    p-3
+
+                    [&_.p-datepicker-calendar_td>span]:!rounded-full
+
+                    [&_.p-datepicker-calendar_td>span:hover]:!bg-gray-300
+                    [&_.p-datepicker-calendar_td>span:hover]:!text-black
+
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border
+                    [&_.p-datepicker-calendar_td.p-datepicker-today>span]:!border-black
+
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!bg-black
+                    [&_.p-datepicker-calendar_td.p-highlight>span]:!text-white
+                  "
+                />
+                <div
+                  *ngIf="
+                    formReminder.controls.reminderAt.invalid &&
+                    formReminder.controls.reminderAt.touched
+                  "
+                >
+                  <small
+                    class="text-rose-500"
+                    *ngIf="formReminder.controls.reminderAt.errors?.['required']"
+                  >
+                    La fecha del recordatorio es requerida.
+                  </small>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="flex justify-end items-center gap-4">
+            <div class="flex gap-2">
+              <button
+                pButton
+                type="button"
+                (click)="resetForm()"
+                class="
+                bg-cuaternario
+                !text-black
+                hover:!bg-[red]
+                hover:!border-[red]
+                hover:!text-white
+                !rounded-full
+                transition-all
+                duration-200
+                flex
+                items-center
+                gap-2
+                px-4
+                py-2"
+                  >
+                    <iconify-icon
+                      icon="streamline-sharp:clean-broom-wipe-solid"
+                      class="text-lg text-inherit"
+                    ></iconify-icon>
+
+                    <span class="font-medium">
+                      limpiar
+                    </span>
+              </button>
+
+              <button-save
+                [label]="'Guardar'"
+                [loading]="loading"
+                [disabled]="formDataAtencion.invalid"
+                (click)="onSubmitAtencion()"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="col-span-2">
+    <p-card styleClass="custom-card">
+      <ng-template #header>
+        <div class="!bg-gradient-to-r from-[var(--sat-Accent)] to-[var(--sat-Primario)] pt-3 grid grid-cols-1 gap-2">
+          <div class="px-5">
+            <h4 class="text-xl font-bold text-gray-800">
+              Sistema de Consulta Unificada
+            </h4>
+            <p class="text-xs text-gray-600">
+              Consulta toda la información de contribuyentes de manera
+              centralizada
+            </p>
+          </div>
+          <div class="w-full border-t border-slate-300"></div>
+        </div>
+      </ng-template>
+      <app-unified-query-system />
+    </p-card>
+  </div>
+</div>

@@ -1,0 +1,183 @@
+<div class="h-full flex flex-col p-8 overflow-y-auto">
+
+  <!-- Header de bienvenida -->
+  <div class="flex items-center justify-between mb-8 pt-22">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">{{ greeting }}, Admin 👋</h2>
+      <p class="text-gray-500 text-base mt-1">Aquí tienes el resumen de operaciones de hoy.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm text-gray-400">{{ today }}</span>
+      <a routerLink="/packages/new"
+        class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-all">
+        + Nuevo paquete
+      </a>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="grid grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+    @for (stat of stats; track stat.label) {
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" [class]="stat.bg">
+          <iconify-icon [icon]="stat.icon" class="text-2xl" [class]="stat.color"></iconify-icon>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stat.value }}</p>
+          <p class="text-sm text-gray-500">{{ stat.label }}</p>
+          <p class="text-xs text-gray-400 mt-0.5">{{ stat.sub }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Fila principal -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+
+    <!-- Entregas recientes (ocupa 2 cols) -->
+    <div class="xl:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h3 class="text-base font-semibold text-gray-800">Entregas recientes</h3>
+        <a routerLink="/deliveries" class="text-sm text-violet-600 hover:underline font-medium">Ver todas →</a>
+      </div>
+      <div class="divide-y divide-gray-50">
+        @for (d of recentDeliveries; track d.id) {
+          <div class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
+            <p class="font-mono text-xs text-gray-400 w-20 shrink-0">{{ d.id }}</p>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-800 truncate">{{ d.sender }}</p>
+              <p class="text-xs text-gray-400">→ {{ d.destination }}</p>
+            </div>
+            <span
+              class="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0"
+              [ngClass]="d.status | statusLabel:'class'"
+            >
+              {{ d.status | statusLabel }}
+            </span>
+            <p class="text-xs text-gray-400 shrink-0 w-24 text-right">{{ d.date }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Alertas -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h3 class="text-base font-semibold text-gray-800">Alertas</h3>
+        <span class="w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+          {{ alerts.length }}
+        </span>
+      </div>
+      <div class="flex flex-col divide-y divide-gray-50">
+        @for (alert of alerts; track alert.message) {
+          <div class="flex items-start gap-3 px-6 py-4">
+            <iconify-icon [icon]="alert.icon"
+              class="text-lg mt-0.5 shrink-0"
+              [class]="alert.type === 'danger' ? 'text-red-500' : 'text-orange-400'">
+            </iconify-icon>
+            <div>
+              <p class="text-sm font-semibold"
+                [class]="alert.type === 'danger' ? 'text-red-600' : 'text-orange-500'">
+                {{ alert.message }}
+              </p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ alert.detail }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fila inferior -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+    <!-- Actividad semanal -->
+    <div class="xl:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+      <h3 class="text-base font-semibold text-gray-800 mb-6">Actividad semanal</h3>
+      <div class="flex items-end gap-3 h-36">
+        @for (day of weekActivity; track day.day) {
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <!-- Barra entregados -->
+            <div class="w-full flex flex-col justify-end gap-0.5" style="height: 112px">
+              <div
+                class="w-full bg-red-200 rounded-t"
+                [style.height.px]="(day.failed / maxActivity) * 100">
+              </div>
+              <div
+                class="w-full bg-violet-500 rounded-t"
+                [style.height.px]="(day.delivered / maxActivity) * 100">
+              </div>
+            </div>
+            <p class="text-xs text-gray-400">{{ day.day }}</p>
+          </div>
+        }
+      </div>
+      <!-- Leyenda -->
+      <div class="flex items-center gap-5 mt-4">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-sm bg-violet-500"></div>
+          <span class="text-xs text-gray-500">Entregados</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-sm bg-red-200"></div>
+          <span class="text-xs text-gray-500">Fallidos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+      <h3 class="text-base font-semibold text-gray-800 mb-5">Accesos rápidos</h3>
+      <div class="flex flex-col gap-3">
+
+        <a routerLink="/packages/new"
+          class="flex items-center gap-3 px-4 py-3.5 bg-violet-50 hover:bg-violet-100 rounded-xl transition-colors group">
+          <div class="w-9 h-9 bg-violet-100 group-hover:bg-violet-200 rounded-lg flex items-center justify-center transition-colors">
+            <iconify-icon icon="mdi:package-variant-plus" class="text-violet-600 text-xl"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-violet-700">Registrar paquete</p>
+            <p class="text-xs text-violet-400">Nuevo envío</p>
+          </div>
+        </a>
+
+        <a routerLink="/drivers"
+          class="flex items-center gap-3 px-4 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group">
+          <div class="w-9 h-9 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors">
+            <iconify-icon icon="mdi:account-tie" class="text-gray-600 text-xl"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Conductores</p>
+            <p class="text-xs text-gray-400">Gestionar personal</p>
+          </div>
+        </a>
+
+        <a routerLink="/vehicles"
+          class="flex items-center gap-3 px-4 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group">
+          <div class="w-9 h-9 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors">
+            <iconify-icon icon="mdi:truck" class="text-gray-600 text-xl"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Camiones</p>
+            <p class="text-xs text-gray-400">Gestionar flota</p>
+          </div>
+        </a>
+
+        <a routerLink="/deliveries"
+          class="flex items-center gap-3 px-4 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group">
+          <div class="w-9 h-9 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors">
+            <iconify-icon icon="mdi:truck-delivery" class="text-gray-600 text-xl"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Entregas</p>
+            <p class="text-xs text-gray-400">Ver todos los envíos</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

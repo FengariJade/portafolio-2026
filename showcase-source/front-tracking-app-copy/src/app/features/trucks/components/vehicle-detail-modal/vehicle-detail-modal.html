@@ -1,0 +1,91 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6"
+    (click)="close.emit()">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl"
+      (click)="$event.stopPropagation()">
+
+      <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">Detalle del Camión</h3>
+          @if (truck()) {
+            <p class="text-sm text-gray-400 font-mono mt-0.5">{{ truck()!.licensePlate }}</p>
+          }
+        </div>
+        <button (click)="close.emit()"
+          class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 text-xl">✕</button>
+      </div>
+
+      <!-- Loading -->
+      @if (loading()) {
+        <div class="flex items-center justify-center py-16">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
+            <p class="text-sm text-gray-400">Cargando detalle...</p>
+          </div>
+        </div>
+      }
+
+      <!-- Error -->
+      @if (error() && !loading()) {
+        <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-8 py-4 m-6 rounded-lg">
+          <span>⚠️</span><span>{{ error() }}</span>
+        </div>
+      }
+
+      <!-- Contenido -->
+      @if (truck() && !loading()) {
+        <div class="px-8 py-6 grid grid-cols-2 gap-5">
+
+          <div class="bg-gray-50 rounded-xl p-5">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Vehículo</p>
+            <p class="text-sm font-medium text-gray-800">{{ truck()!.brand }} {{ truck()!.model }}</p>
+            <p class="text-sm text-gray-500 mt-1">Placa: <span class="font-mono font-semibold">{{ truck()!.licensePlate }}</span></p>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-5">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Capacidades</p>
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+              <iconify-icon icon="ri:weight-fill" class="text-gray-400 text-base"></iconify-icon>
+              Peso máximo: <span class="font-semibold text-gray-800">{{ +truck()!.maxWeightKg / 1000 }} t</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-600 mt-2">
+              <iconify-icon icon="boxicons:box-filled" class="text-gray-400 text-base"></iconify-icon>
+              Volumen máximo: <span class="font-semibold text-gray-800">{{ truck()!.maxVolumeM3 }} m³</span>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-5">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Asignación</p>
+            <p class="text-sm text-gray-600">
+              {{ truck()!.ownershipType === 'THIRD_PARTY' ? 'Proveedor' : 'Tipo' }}:
+              <span class="font-medium text-gray-800">{{ truck()!.providerName ?? '—' }}</span>
+            </p>
+            <p class="text-sm text-gray-600 mt-1">Propiedad:
+              <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                [class]="truck()!.ownershipType | vehicleStatus:'class':'ownership'">
+                {{ truck()!.ownershipType | vehicleStatus:'label':'ownership' }}
+              </span>
+            </p>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-5">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Estado</p>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="truck()!.status | vehicleStatus:'class'">
+              {{ truck()!.status | vehicleStatus }}
+            </span>
+          </div>
+
+        </div>
+      }
+
+      <div class="px-8 py-5 border-t border-gray-100 flex justify-end">
+        <button (click)="close.emit()"
+          class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,249 @@
+
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Heavitas';
+  src: url('/fonts/Heavitas.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('/fonts/MYRIADPRO-REGULAR.OTF') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Base */
+html, body {
+  font-family: 'MyriadPro', system-ui, sans-serif;
+}
+
+.font-heavitas {
+  font-family: 'Heavitas', sans-serif !important;
+}
+
+.font-poppins{
+  font-family: 'Poppins', sans-serif !important;
+}
+
+:root {
+  --nouz-violetaA: #3535EF;
+  --nouz-violetaB: #BABAD8;
+  --nouz-blanco: #FFFFFF;
+  --nouz-grisA: #F7F7F7;
+  --nouz-grisB: #AFAFAF;
+  --nouz-grisC: #474747;
+  --nouz-negro: #000000;
+  --nouz-celesteA: #1FA2FF;
+}
+
+/* styles/components.css */
+/* .glass {
+  @apply bg-glass backdrop-blur-glass border border-white/10 shadow-lg;
+} */
+
+@layer utilities {
+  /* =========================
+     BACKGROUNDS
+     ========================= */
+
+  .bg-violetaA {
+    background-color: var(--nouz-violetaA) !important;
+  }
+
+  .bg-violetaB {
+    background-color: var(--nouz-violetaB) !important;
+  }
+
+  .bg-celesteA {
+    background-color: var(--nouz-celesteA) !important;
+  }
+
+  .bg-blanco {
+    background-color: var(--nouz-blanco) !important;
+  }
+
+  .bg-grisA {
+    background-color: var(--nouz-grisA) !important;
+  }
+
+  .bg-grisB {
+    background-color: var(--nouz-grisB) !important;
+  }
+
+  .bg-grisC {
+    background-color: var(--nouz-grisC) !important;
+  }
+
+  .bg-negro {
+    background-color: var(--nouz-negro) !important;
+  }
+
+  /* =========================
+     TEXT COLORS
+     ========================= */
+
+  .text-violetaA {
+    color: var(--nouz-violetaA) !important;
+  }
+
+  .text-violetaB {
+    color: var(--nouz-violetaB) !important;
+  }
+
+  .text-celesteA {
+    color: var(--nouz-celesteA) !important;
+  }
+
+  .text-blanco {
+    color: var(--nouz-blanco) !important;
+  }
+
+  .text-grisA {
+    color: var(--nouz-grisA) !important;
+  }
+
+  .text-grisB {
+    color: var(--nouz-grisB) !important;
+  }
+
+  .text-grisC {
+    color: var(--nouz-grisC) !important;
+  }
+
+  .text-negro {
+    color: var(--nouz-negro) !important;
+  }
+
+  /* =========================
+     BORDERS
+     ========================= */
+
+  .border-violetaA {
+    border-color: var(--nouz-violetaA) !important;
+  }
+
+  .border-grisB {
+    border-color: var(--nouz-grisB) !important;
+  }
+
+  .border-grisC {
+    border-color: var(--nouz-grisC) !important;
+  }
+
+  /* =========================
+     HOVER STATES
+     ========================= */
+
+  .hover\:bg-violetaA:hover {
+    background-color: var(--nouz-violetaA) !important;
+  }
+
+  .hover\:bg-celesteA:hover {
+    background-color: var(--nouz-celesteA) !important;
+  }
+
+  .hover\:text-blanco:hover {
+    color: var(--nouz-blanco) !important;
+  }
+}
+
+
+@layer utilities {
+  /* =========================
+     GLASS HEADER
+     ========================= */
+
+   .glass-header {
+      background: rgba(255, 255, 255, 0.15); /* casi transparente */
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+      border-radius: 9999px;
+
+      box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+  .glass-container {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .nav-link {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem; /* text-sm */
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .nav-link:hover {
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+}
+
+
+/* =========================
+   FLOATING ANIMATIONS
+   ========================= */
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-fast {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-28px);
+  }
+}
+
+/* Utilities */
+.float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.float-medium {
+  animation: float-medium 4s ease-in-out infinite;
+}
+
+.float-fast {
+  animation: float-fast 5s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  [style*="--bg-desktop"] {
+    background-image: var(--bg-violetaB);
+  }
+}
